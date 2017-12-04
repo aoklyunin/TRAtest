@@ -19,8 +19,8 @@ class KukaController:
         [0.011, 5.840],
         [0.011, 2.617],
         [-5.0, -0.02],
-        [0.02, 3.42],
-        [0.11, 5.641],
+        [0.03, 3.42],
+        [0.15, 5.641],
     ]
     # диапазон допустимых значений движения гриппера
     gripperRange = [0.0, 0.011499]
@@ -45,7 +45,7 @@ class KukaController:
         # переменные для публикации в топики
         self.positionArmPub = rospy.Publisher("/arm_1/arm_controller/position_command",
                                               brics_actuator.msg.JointPositions, queue_size=1)
-        self.torqueArmPub = rospy.Publisher("/arm_1/arm_controller/torque_command", brics_actuator.msg.JointTorques,
+        self.torqueArmPub = rospy.Publisher("/arm_1/arm_controller/torques_command", brics_actuator.msg.JointTorques,
                                             queue_size=1)
         self.velocityArmPub = rospy.Publisher("/arm_1/arm_controller/velocity_command",
                                               brics_actuator.msg.JointVelocities, queue_size=1)
