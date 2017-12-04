@@ -21,12 +21,14 @@ class App(wx.App):
         # функция, вызываемая при закрытии ноды
         rospy.on_shutdown(self.shutdown)
         return True # ну не False же возвращать, правда?:)
+
     # завершение приложения
     def shutdown(self):
         # закрываем приложение
         self.frame.Close()
         # Завершаем работу робота
         rospy.loginfo("Stopping the robot...")
+
 
 # главная функция
 if __name__=='__main__':
