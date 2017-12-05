@@ -1,16 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import math
+import random
+
+import numpy as np
 import rospy
 import brics_actuator.msg
 import geometry_msgs.msg
 import sensor_msgs.msg
 
-
 # ToDO
 # проверка, что задание по положению джоинтов не выходят за границы
 # подумать, как останавливать управление по силам, если моменты обнулить, то робот прото упадёт
 #   -можно попробовать задавать скорости в 0
+import time
+
+from kinematic import getDHMatrix
+
+
 class KukaController:
     # масимальная скорость руки
     maxArmVelocity = math.radians(90)
@@ -22,6 +29,10 @@ class KukaController:
         [0.03, 3.42],
         [0.15, 5.641],
     ]
+
+    targetJPos = [0, 0, 0, 0, 0]
+    flgReached = True
+
     # диапазон допустимых значений движения гриппера
     gripperRange = [0.0, 0.011499]
     # константы типов сообщений
@@ -34,10 +45,46 @@ class KukaController:
     # ответные данные, полученные от куки
     jointState = sensor_msgs.msg.JointState()
 
-    # обработчик пришедших значений
+    reachedAction = False
+
+    def randomPoints(self, n):
+        for i in range(n):
+            self.reachedAction = False
+            joints = []
+            for j in range(5):
+                joints.append(random.uniform(self.jointsRange[j][0], self.jointsRange[j][1]))
+            self.setJointPositions(joints)
+            while not self.reachedAction:
+                time.sleep(1)
+
+
+    # матрица преобразования
+    def getTF(self):
+        DH1 = getDHMatrix(33, math.pi / 2, 147, math.pi * 169 / 180 - self.jointState.position[0])
+        DH2 = getDHMatrix(155, 0, 0, math.pi * 65 / 180 + math.pi / 2 - self.jointState.position[1])
+        DH3 = getDHMatrix(135, 0 / 2, 0, -math.pi * 146 / 180 - self.jointState.position[2])
+        DH4 = getDHMatrix(0, math.pi / 2, 0, math.pi * 102.5 / 180 + math.pi / 2 - self.jointState.position[3])
+        DH5 = getDHMatrix(0, 0, 218, math.pi * 167.5 / 180 - self.jointState.position[4])
+        TF = DH1 * DH2 * DH3 * DH4 * DH5
+        return TF
+
+    def getEndEffectorPos(self):
+        tf = self.getTF()
+        return [tf.item(0,3), tf.item(1,3), tf.item(2,3)]
+
+    # обработчик пришедших значенийitem
     def jointStateCallback(self, data):
         # созраняем пришедшее значение
         self.jointState = data
+        sum = 0
+        for i in range(5):
+            delta = (self.targetJPos[i] - data.position[i])
+            sum += delta * delta
+
+        sum = math.sqrt(sum) / 5
+        if sum < 0.1 and not self.flgReached:
+            self.flgReached = True
+            self.reachedAction = True
         pass
 
     # конструктор
@@ -185,6 +232,7 @@ class KukaController:
         msg.positions = []
         # в цикле создаём объекты для сообщения, подробнее смотри setGripperPositions
         for i in range(5):
+            self.targetJPos = joints
             j = joints[i]
             if j > self.jointsRange[i][1]:
                 j = self.jointsRange[i][1]
@@ -193,6 +241,7 @@ class KukaController:
             jv = self.generateJoinVal(i + 1, j, self.TYPE_JOINT_POSITIONS)
             msg.positions.append(jv)
         self.positionArmPub.publish(msg)
+        self.flgReached = False
         rospy.sleep(1)
 
     # тоже самое, что и setJointPositions, но управляем только одним джоинтом
@@ -201,6 +250,7 @@ class KukaController:
         if not joint_num in range(1, 5):
             rospy.logerror("Звено с номером " + str(joint_num) + " не определено")
             return
+
         msg = brics_actuator.msg.JointPositions()
         msg.positions = [self.generateJoinVal(joint_num, value, self.TYPE_JOINT_POSITIONS)]
         self.positionArmPub.publish(msg)
@@ -239,3 +289,6 @@ class KukaController:
             msg.velocities.append(jv)
         self.velocityArmPub.publish(msg)
         rospy.sleep(1)
+
+    def checkJPosSuccess(self):
+        self.targetJPos

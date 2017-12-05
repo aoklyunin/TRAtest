@@ -68,9 +68,20 @@ class Frame(wx.Frame):
                                 float(self.czPosTex.GetValue()))
         pass
 
+    def setDHChords(self):
+        self.posXTex.Clear()
+        self.posYTex.Clear()
+        self.posZTex.Clear()
+        ps = self.kuka.getEndEffectorPos()
+        self.posXTex.AppendText(str(round(ps[0])))
+        self.posYTex.AppendText(str(round(ps[1])))
+        self.posZTex.AppendText(str(round(ps[1])))
+
+
     # события по таймеру
     def OnTimer(self, event):
         self.setDataToGrid(self.kuka.jointState)
+        self.setDHChords()
         pass
 
         # события по таймеру
@@ -103,6 +114,11 @@ class Frame(wx.Frame):
         self.j5PosTex.AppendText("0")
         pass
 
+    def OnRandomJPos(self, event):
+        self.kuka.randomPoints(int(self.randomTex.GetValue()))
+        pass
+
+
     def OnStopJSpeed(self, event):
         self.kuka.setJointVelocities([0, 0, 0, 0, 0])
         pass
@@ -111,7 +127,8 @@ class Frame(wx.Frame):
         self.kuka.setJointVelocities([0, 0, 0, 0, 0])
         pass
 
-
+    def OnTest(self, event):
+        print (self.kuka.getEndEffectorPos())
 
     # конструктор
     def __init__(self, parent=None, id=-1, title='', pos=(0, 0), size=(490, 700)):
@@ -202,6 +219,18 @@ class Frame(wx.Frame):
         # кнопка управления тележкой и привязка метода к ней
         self.sendCvelBtn = wx.Button(self.panel, label="Положения", pos=(30, 650), size=(100, 30))
         self.Bind(wx.EVT_BUTTON, self.OnSendCVel, self.sendCvelBtn)
+
+        self.randomJposBtn = wx.Button(self.panel, label="Рандом", pos=(70, 410), size=(120, 30))
+        self.Bind(wx.EVT_BUTTON, self.OnRandomJPos, self.randomJposBtn)
+        self.randomTex = wx.TextCtrl(self.panel, -1, '0', pos=(30, 410), size=(40, 30))
+
+        self.testBtn = wx.Button(self.panel, label="Тест", pos=(270, 410), size=(120, 30))
+        self.Bind(wx.EVT_BUTTON, self.OnTest, self.testBtn)
+
+        self.posXTex = wx.TextCtrl(self.panel, -1, '0', pos=(30, 450), size=(80, 30))
+        self.posYTex = wx.TextCtrl(self.panel, -1, '0', pos=(120, 450), size=(80, 30))
+        self.posZTex = wx.TextCtrl(self.panel, -1, '0', pos=(210, 450), size=(80, 30))
+
 
     # инициализация таблицы
     def initGrid(self):
