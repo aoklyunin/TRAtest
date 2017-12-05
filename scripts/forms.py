@@ -3,11 +3,11 @@
 
 import wx
 import wx.grid as gridlib
+
 from kukaController import KukaController
 
 
 class Frame(wx.Frame):
-
     # закрытие формы
     def onClose(self, event):
         # останавливаем таймер
@@ -17,7 +17,11 @@ class Frame(wx.Frame):
     # записать полученную от куки дату в таблицу
     def setDataToGrid(self, data):
         for i in range(len(data.position)):
-            self.myGrid.SetCellValue(i, 0, ("%.2f" % data.position[i]))
+            if i < 5:
+                s = self.kuka.jointOffsets[i]
+            else:
+                s = 0
+            self.myGrid.SetCellValue(i, 0, ("%.2f" % (data.position[i] + s)))
             self.myGrid.SetCellValue(i, 1, ("%.2f" % data.velocity[i]))
             self.myGrid.SetCellValue(i, 2, ("%.2f" % data.effort[i]))
         pass
@@ -75,8 +79,7 @@ class Frame(wx.Frame):
         ps = self.kuka.getEndEffectorPos()
         self.posXTex.AppendText(str(round(ps[0])))
         self.posYTex.AppendText(str(round(ps[1])))
-        self.posZTex.AppendText(str(round(ps[1])))
-
+        self.posZTex.AppendText(str(round(ps[2])))
 
     # события по таймеру
     def OnTimer(self, event):
@@ -117,7 +120,6 @@ class Frame(wx.Frame):
     def OnRandomJPos(self, event):
         self.kuka.randomPoints(int(self.randomTex.GetValue()))
         pass
-
 
     def OnStopJSpeed(self, event):
         self.kuka.setJointVelocities([0, 0, 0, 0, 0])
@@ -230,7 +232,6 @@ class Frame(wx.Frame):
         self.posXTex = wx.TextCtrl(self.panel, -1, '0', pos=(30, 450), size=(80, 30))
         self.posYTex = wx.TextCtrl(self.panel, -1, '0', pos=(120, 450), size=(80, 30))
         self.posZTex = wx.TextCtrl(self.panel, -1, '0', pos=(210, 450), size=(80, 30))
-
 
     # инициализация таблицы
     def initGrid(self):

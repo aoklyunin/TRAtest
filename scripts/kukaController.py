@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import csv
 import math
 import random
 
+
 import numpy as np
+
+import datetime
 import rospy
 import brics_actuator.msg
 import geometry_msgs.msg
@@ -29,8 +33,16 @@ class KukaController:
         [0.03, 3.42],
         [0.15, 5.641],
     ]
+    L = [33, 147, 155, 135, 217.5]
 
     targetJPos = [0, 0, 0, 0, 0]
+    jointOffsets = [
+        -170.0/180*math.pi,
+        -65.0/180*math.pi,
+        (90+60.0)/180*math.pi,
+        0.0/180*math.pi,
+        -90.0/180*math.pi
+    ]
     flgReached = True
 
     # диапазон допустимых значений движения гриппера
@@ -47,30 +59,58 @@ class KukaController:
 
     reachedAction = False
 
+    def checkPositionXYZEnable(self, pos):
+        x = pos[0]
+        y = pos[1]
+        z = pos[2]
+        if abs(x)<50 or abs(y)<50:
+            return False
+        if z<80:
+            return False
+
+        return True
+
+    def checkPositionJEnabled(self,joints):
+        xyz = self.getEndEffectorPosByJ(joints)
+        return self.checkPositionXYZEnable(xyz)
+
     def randomPoints(self, n):
         for i in range(n):
-            self.reachedAction = False
-            joints = []
-            for j in range(5):
-                joints.append(random.uniform(self.jointsRange[j][0], self.jointsRange[j][1]))
-            self.setJointPositions(joints)
+            time.sleep(2)
+            flgCreated = False
+            while not flgCreated:
+                self.reachedAction = False
+                joints = []
+
+                for j in range(5):
+                    joints.append(random.uniform(self.jointsRange[j][0], self.jointsRange[j][1]))
+
+                if self.checkPositionJEnabled(joints):
+                    flgCreated = True
+                    self.setJointPositions(joints)
+
             while not self.reachedAction:
                 time.sleep(1)
 
+    def getDH(self,position):
+        DH1 = getDHMatrix(math.pi / 2, self.L[0], self.L[1], position[0] + self.jointOffsets[0])
+        DH2 = getDHMatrix(0, self.L[2], 0, position[1] + self.jointOffsets[1] + math.pi / 2)
+        DH3 = getDHMatrix(0, self.L[3], 0, position[2] + self.jointOffsets[2])
+        DH4 = getDHMatrix(math.pi / 2, 0, 0, position[3] + self.jointOffsets[3])
+        DH5 = getDHMatrix(0, 0, self.L[4], position[4] + self.jointOffsets[4])
+        return DH1 * DH2 * DH3 * DH4 * DH5
 
     # матрица преобразования
     def getTF(self):
-        DH1 = getDHMatrix(33, math.pi / 2, 147, math.pi * 169 / 180 - self.jointState.position[0])
-        DH2 = getDHMatrix(155, 0, 0, math.pi * 65 / 180 + math.pi / 2 - self.jointState.position[1])
-        DH3 = getDHMatrix(135, 0 / 2, 0, -math.pi * 146 / 180 - self.jointState.position[2])
-        DH4 = getDHMatrix(0, math.pi / 2, 0, math.pi * 102.5 / 180 + math.pi / 2 - self.jointState.position[3])
-        DH5 = getDHMatrix(0, 0, 218, math.pi * 167.5 / 180 - self.jointState.position[4])
-        TF = DH1 * DH2 * DH3 * DH4 * DH5
-        return TF
+        return self.getDH(self.jointState.position)
 
     def getEndEffectorPos(self):
         tf = self.getTF()
         return [tf.item(0,3), tf.item(1,3), tf.item(2,3)]
+
+    def getEndEffectorPosByJ(self, joints):
+        tf = self.getDH(joints)
+        return [tf.item(0, 3), tf.item(1, 3), tf.item(2, 3)]
 
     # обработчик пришедших значенийitem
     def jointStateCallback(self, data):
@@ -80,7 +120,7 @@ class KukaController:
         for i in range(5):
             delta = (self.targetJPos[i] - data.position[i])
             sum += delta * delta
-
+        self.spamwriter.writerow(data.position + data.velocity + data.effort)
         sum = math.sqrt(sum) / 5
         if sum < 0.1 and not self.flgReached:
             self.flgReached = True
@@ -105,6 +145,11 @@ class KukaController:
                                                   brics_actuator.msg.JointVelocities, queue_size=1)
         self.jointStateSubscriber = rospy.Subscriber("/joint_states", sensor_msgs.msg.JointState,
                                                      self.jointStateCallback)
+        dt = datetime.datetime.now()
+        date = dt.strftime("%d_%m_%Y_%I_%M%p")
+        self.outLog = open(date+'.csv', 'wb')
+        self.spamwriter = csv.writer(self.outLog, delimiter=' ',
+                                escapechar=' ', quoting=csv.QUOTE_NONE)
         # пауза необходима для правильной обработки пакетов
         rospy.sleep(1)
         rospy.loginfo("Kuka created")
