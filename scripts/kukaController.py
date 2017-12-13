@@ -4,10 +4,12 @@ import csv
 import math
 import random
 
-
 import numpy as np
 
 import datetime
+import tkMessageBox
+from wx import wx
+
 import rospy
 import brics_actuator.msg
 import geometry_msgs.msg
@@ -35,13 +37,21 @@ class KukaController:
     ]
     L = [33, 147, 155, 135, 217.5]
 
-    targetJPos = [0, 0, 0, 0, 0]
+    TARGET_TYPE_MANY_JOINTS = 0
+    TARGET_TYPE_ONE_JOINT = 1
+    TARGET_TYPE_NO_TARGET = -1
+
+    targetJPoses = [0, 0, 0, 0, 0]
+    targetJPos = 0
+    targetJposNum = -1
+    targetType = TARGET_TYPE_NO_TARGET
+
     jointOffsets = [
-        -170.0/180*math.pi,
-        -65.0/180*math.pi,
-        (90+60.0)/180*math.pi,
-        0.0/180*math.pi,
-        -90.0/180*math.pi
+        -170.0 / 180 * math.pi,
+        -65.0 / 180 * math.pi,
+        (90 + 60.0) / 180 * math.pi,
+        0.0 / 180 * math.pi,
+        -90.0 / 180 * math.pi
     ]
     flgReached = True
 
@@ -59,27 +69,109 @@ class KukaController:
 
     reachedAction = False
 
+    def warn(self, message, caption='Ае!'):
+        dlg = wx.MessageDialog(None, message, caption, wx.OK | wx.ICON_WARNING)
+        dlg.ShowModal()
+        dlg.Destroy()
+
+    # трапеция номер джоина, целевое положение, максимальная скорость, ускорение
+    def makeTrapeze(self, jointNum, arange, maxW, betta):
+        angleStart = self.jointState.position[jointNum - 1]
+        accAngle = maxW ** 2 / (2 * (betta ** 2))
+        print(accAngle)
+        curPos = angleStart
+
+        # влев
+        while curPos - angleStart < arange:
+            curPos = self.jointState.position[jointNum - 1]
+            delta = curPos - angleStart
+            if delta <= accAngle:
+                w = maxW * delta / accAngle
+            elif delta >= arange - accAngle:
+                w = (arange - delta) / accAngle * maxW
+            else:
+                w = maxW
+            if w < 0.01:
+                w = 0.01
+            print("_")
+            print(w)
+            print(curPos - angleStart)
+            self.setJointVelocity(jointNum, w)
+
+        self.setJointVelocity(jointNum, 0)
+        while curPos - angleStart > -arange:
+            curPos = self.jointState.position[jointNum - 1]
+            if curPos > angleStart:
+                delta = curPos - angleStart
+                if delta <= accAngle:
+                    w = maxW * delta / accAngle
+                elif delta >= arange - accAngle:
+                    w = (arange - delta) / accAngle * maxW
+                else:
+                    w = maxW
+            else:
+                delta = angleStart - curPos
+                if delta <= accAngle:
+                    w = maxW * delta / accAngle
+                elif delta >= arange - accAngle:
+                    w = (arange - delta) / accAngle * maxW
+                else:
+                    w = maxW
+
+            if w < 0.01:
+                w = 0.01
+
+            print("_")
+            print(w)
+            print(curPos - angleStart)
+            self.setJointVelocity(jointNum, -w)
+
+        self.setJointVelocity(jointNum, 0)
+
+        # в начало
+        while curPos < angleStart:
+            curPos = self.jointState.position[jointNum - 1]
+
+            delta = angleStart - curPos
+            if delta <= accAngle:
+                w = maxW * delta / accAngle
+            elif delta >= arange - accAngle:
+                w = (arange - delta) / accAngle * maxW
+            else:
+                w = maxW
+
+            if w < 0.01:
+                w = 0.01
+
+            print("_")
+            print(w)
+            print(angleStart-curPos)
+            self.setJointVelocity(jointNum, w)
+
+        self.setJointVelocity(jointNum, 0)
+
+
     def checkPositionXYZEnable(self, pos):
         x = pos[0]
         y = pos[1]
         z = pos[2]
-        if abs(x)<50 or abs(y)<50:
+        if abs(x) < 90 or abs(y) < 90:
             return False
-        if z<80:
+        if z < 80:
             return False
 
         return True
 
-    def checkPositionJEnabled(self,joints):
+    def checkPositionJEnabled(self, joints):
         xyz = self.getEndEffectorPosByJ(joints)
         return self.checkPositionXYZEnable(xyz)
 
     def randomPoints(self, n):
         for i in range(n):
-            time.sleep(2)
+            print(i)
+            time.sleep(7)
             flgCreated = False
             while not flgCreated:
-                self.reachedAction = False
                 joints = []
 
                 for j in range(5):
@@ -88,11 +180,15 @@ class KukaController:
                 if self.checkPositionJEnabled(joints):
                     flgCreated = True
                     self.setJointPositions(joints)
+                    self.targetType == self.TARGET_TYPE_MANY_JOINTS
+                    self.targetJPoses = joints
 
-            while not self.reachedAction:
+            while self.targetType == self.TARGET_TYPE_MANY_JOINTS:
                 time.sleep(1)
 
-    def getDH(self,position):
+        self.warn("Робот отработал все точки")
+
+    def getDH(self, position):
         DH1 = getDHMatrix(math.pi / 2, self.L[0], self.L[1], position[0] + self.jointOffsets[0])
         DH2 = getDHMatrix(0, self.L[2], 0, position[1] + self.jointOffsets[1] + math.pi / 2)
         DH3 = getDHMatrix(0, self.L[3], 0, position[2] + self.jointOffsets[2])
@@ -106,26 +202,35 @@ class KukaController:
 
     def getEndEffectorPos(self):
         tf = self.getTF()
-        return [tf.item(0,3), tf.item(1,3), tf.item(2,3)]
+        return [tf.item(0, 3), tf.item(1, 3), tf.item(2, 3)]
 
     def getEndEffectorPosByJ(self, joints):
         tf = self.getDH(joints)
         return [tf.item(0, 3), tf.item(1, 3), tf.item(2, 3)]
+
+    def checkIfListIsZero(self, lst):
+        flg = True
+        for i in range(len(lst)):
+            if lst[i] != 0:
+                flg = False
+        return flg
 
     # обработчик пришедших значенийitem
     def jointStateCallback(self, data):
         # созраняем пришедшее значение
         self.jointState = data
         sum = 0
-        for i in range(5):
-            delta = (self.targetJPos[i] - data.position[i])
-            sum += delta * delta
-        self.spamwriter.writerow(data.position + data.velocity + data.effort)
-        sum = math.sqrt(sum) / 5
-        if sum < 0.1 and not self.flgReached:
-            self.flgReached = True
-            self.reachedAction = True
-        pass
+        if self.targetType == self.TARGET_TYPE_MANY_JOINTS:
+            for i in range(5):
+                delta = (self.targetJPoses[i] - data.position[i])
+                sum += delta * delta
+            self.spamwriter.writerow((time.time(),) + data.position + data.velocity + data.effort)
+            sum = math.sqrt(sum) / 5
+        elif self.targetType == self.TARGET_TYPE_ONE_JOINT:
+            sum = abs(self.targetJPos - data.position[self.targetJposNum])
+
+        if sum < 0.1 and self.targetType != self.TARGET_TYPE_NO_TARGET:
+            self.targetType = self.TARGET_TYPE_NO_TARGET
 
     # конструктор
     def __init__(self):
@@ -147,12 +252,26 @@ class KukaController:
                                                      self.jointStateCallback)
         dt = datetime.datetime.now()
         date = dt.strftime("%d_%m_%Y_%I_%M%p")
-        self.outLog = open(date+'.csv', 'wb')
+        self.outLog = open('logs/' + date + '.csv', 'wb')
         self.spamwriter = csv.writer(self.outLog, delimiter=' ',
-                                escapechar=' ', quoting=csv.QUOTE_NONE)
+                                     escapechar=' ', quoting=csv.QUOTE_NONE)
         # пауза необходима для правильной обработки пакетов
         rospy.sleep(1)
         rospy.loginfo("Kuka created")
+
+    # подогнать джоинт так, чтобы момент в нём был нулевым(работает коряво, впадлу пока допиливать)
+    def zeroMomentInJoint(self, j):
+        for i in range(10):
+            curPos = self.jointState.position[j - 1]
+            curMoment = self.jointState.effort[j - 1]
+            posStar = curMoment / 2 + curPos
+            print(curPos)
+            print(posStar)
+            self.setJointPosition(j, posStar)
+            self.targetType = self.TARGET_TYPE_ONE_JOINT
+            self.targetJPos = posStar
+            self.targetJposNum = j
+            rospy.sleep(2)
 
     # получаем по типу топика размерность
     def getUnitValue(self, tp):
@@ -271,13 +390,17 @@ class KukaController:
         self.forceGripperPub.publish(msg)
         rospy.sleep(1)
 
+    # Поставить робота в свечку
+    def setRobotToCandle(self):
+        joints = [2.01, 1.09, -2.44, 1.74, 2.96]
+        self.setJointPositions(joints)
+
     # задаём положения всех джоинтов
     def setJointPositions(self, joints):
         msg = brics_actuator.msg.JointPositions()
         msg.positions = []
         # в цикле создаём объекты для сообщения, подробнее смотри setGripperPositions
         for i in range(5):
-            self.targetJPos = joints
             j = joints[i]
             if j > self.jointsRange[i][1]:
                 j = self.jointsRange[i][1]
@@ -286,7 +409,9 @@ class KukaController:
             jv = self.generateJoinVal(i + 1, j, self.TYPE_JOINT_POSITIONS)
             msg.positions.append(jv)
         self.positionArmPub.publish(msg)
-        self.flgReached = False
+        self.targetJPoses = joints
+        self.targetType = self.TARGET_TYPE_MANY_JOINTS
+
         rospy.sleep(1)
 
     # тоже самое, что и setJointPositions, но управляем только одним джоинтом
@@ -299,6 +424,7 @@ class KukaController:
         msg = brics_actuator.msg.JointPositions()
         msg.positions = [self.generateJoinVal(joint_num, value, self.TYPE_JOINT_POSITIONS)]
         self.positionArmPub.publish(msg)
+
         rospy.sleep(1)
 
     # задаём моменты всех джоинтов подробнее смотри setJointPositions
@@ -323,7 +449,7 @@ class KukaController:
         msg = brics_actuator.msg.JointVelocities()
         msg.velocities = [self.generateJoinVal(joint_num, value, self.TYPE_JOINT_VELOCITIES)]
         self.velocityArmPub.publish(msg)
-        rospy.sleep(1)
+        rospy.sleep(0.1)
 
     # задаём скорость конкретному джоинту подробнее смотри setJointPosition
     def setJointVelocities(self, joints):
@@ -336,4 +462,5 @@ class KukaController:
         rospy.sleep(1)
 
     def checkJPosSuccess(self):
-        self.targetJPos
+        # self.targetJPoses
+        pass

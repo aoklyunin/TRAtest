@@ -17,10 +17,10 @@ class Frame(wx.Frame):
     # записать полученную от куки дату в таблицу
     def setDataToGrid(self, data):
         for i in range(len(data.position)):
-            if i < 5:
-                s = self.kuka.jointOffsets[i]
-            else:
-                s = 0
+            #if i < 5:
+            #    s = self.kuka.jointOffsets[i]
+            #else:
+            s = 0
             self.myGrid.SetCellValue(i, 0, ("%.2f" % (data.position[i] + s)))
             self.myGrid.SetCellValue(i, 1, ("%.2f" % data.velocity[i]))
             self.myGrid.SetCellValue(i, 2, ("%.2f" % data.effort[i]))
@@ -132,8 +132,25 @@ class Frame(wx.Frame):
     def OnTest(self, event):
         print (self.kuka.getEndEffectorPos())
 
+    def OnCandle(self, event):
+        print (self.kuka.setRobotToCandle())
+
+    def OnFriction(self, event):
+        print (self.kuka.makeTrapeze(
+            int(self.frictionJNumTex.GetValue()),
+            float(self.frictionAngleEndTex.GetValue()),
+            float(self.frictionMaxWTex.GetValue()),
+            float(self.frictionBettaTex.GetValue())
+        ))
+
+    def OnZeroMoment(self,event):
+        #self.kuka.zeroMomentInJoint(int(self.zeroMomentTex.GetValue()))
+        pass
+
+
+
     # конструктор
-    def __init__(self, parent=None, id=-1, title='', pos=(0, 0), size=(490, 700)):
+    def __init__(self, parent=None, id=-1, title='', pos=(0, 0), size=(690, 900)):
         # создаём фрейм
         wx.Frame.__init__(self, parent, id, title, pos, size)
         # создаём объект для взаимодействия с роботом
@@ -226,12 +243,27 @@ class Frame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnRandomJPos, self.randomJposBtn)
         self.randomTex = wx.TextCtrl(self.panel, -1, '0', pos=(30, 410), size=(40, 30))
 
-        self.testBtn = wx.Button(self.panel, label="Тест", pos=(270, 410), size=(120, 30))
+        self.testBtn = wx.Button(self.panel, label="Тест", pos=(320, 300), size=(120, 30))
         self.Bind(wx.EVT_BUTTON, self.OnTest, self.testBtn)
 
         self.posXTex = wx.TextCtrl(self.panel, -1, '0', pos=(30, 450), size=(80, 30))
         self.posYTex = wx.TextCtrl(self.panel, -1, '0', pos=(120, 450), size=(80, 30))
         self.posZTex = wx.TextCtrl(self.panel, -1, '0', pos=(210, 450), size=(80, 30))
+
+        self.candleBtn = wx.Button(self.panel, label="В свечку", pos=(320, 330), size=(120, 30))
+        self.Bind(wx.EVT_BUTTON, self.OnCandle, self.candleBtn)
+
+        self.frictionBtn = wx.Button(self.panel, label="Friction", pos=(320, 380), size=(120, 30))
+        self.Bind(wx.EVT_BUTTON, self.OnFriction, self.frictionBtn)
+
+        self.frictionJNumTex = wx.TextCtrl(self.panel, -1, '1', pos=(320, 410), size=(80, 30))
+        self.frictionAngleEndTex = wx.TextCtrl(self.panel, -1, '1', pos=(410, 410), size=(80, 30))
+        self.frictionMaxWTex = wx.TextCtrl(self.panel, -1, '0.5', pos=(500, 410), size=(80, 30))
+        self.frictionBettaTex = wx.TextCtrl(self.panel, -1, '1', pos=(590, 410), size=(80, 30))
+
+        self.zeroMomentBtn = wx.Button(self.panel, label="Нулевой момент", pos=(370, 450), size=(140, 30))
+        self.Bind(wx.EVT_BUTTON, self.OnZeroMoment, self.zeroMomentBtn)
+        self.zeroMomentTex = wx.TextCtrl(self.panel, -1, '4', pos=(320, 450), size=(40, 30))
 
     # инициализация таблицы
     def initGrid(self):
