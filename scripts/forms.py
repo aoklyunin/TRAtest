@@ -136,12 +136,20 @@ class Frame(wx.Frame):
         print (self.kuka.setRobotToCandle())
 
     def OnFriction(self, event):
-        print (self.kuka.makeTrapeze(
+        print (self.kuka.makeTrapezeSimpleCiclic(
             int(self.frictionJNumTex.GetValue()),
             float(self.frictionAngleEndTex.GetValue()),
-            float(self.frictionMaxWTex.GetValue()),
-            float(self.frictionBettaTex.GetValue())
+            float(self.frictionMaxWTex.GetValue())
         ))
+
+    def OnFullFriction(self, event):
+            print (self.kuka.makeTrapezeSimpleCiclic(
+                int(self.frictionJNumTex.GetValue()),
+                float(self.frictionAngleEndTex.GetValue()),
+                float(self.frictionMaxWTex.GetValue())
+            ))
+
+
 
     def OnZeroMoment(self,event):
         #self.kuka.zeroMomentInJoint(int(self.zeroMomentTex.GetValue()))
@@ -256,10 +264,12 @@ class Frame(wx.Frame):
         self.frictionBtn = wx.Button(self.panel, label="Friction", pos=(320, 380), size=(120, 30))
         self.Bind(wx.EVT_BUTTON, self.OnFriction, self.frictionBtn)
 
+        self.frictionFullBtn = wx.Button(self.panel, label="FullFriction", pos=(400, 380), size=(120, 30))
+        self.Bind(wx.EVT_BUTTON, self.OnFullFriction, self.frictionFullBtn)
+
         self.frictionJNumTex = wx.TextCtrl(self.panel, -1, '1', pos=(320, 410), size=(80, 30))
         self.frictionAngleEndTex = wx.TextCtrl(self.panel, -1, '1', pos=(410, 410), size=(80, 30))
         self.frictionMaxWTex = wx.TextCtrl(self.panel, -1, '0.5', pos=(500, 410), size=(80, 30))
-        self.frictionBettaTex = wx.TextCtrl(self.panel, -1, '1', pos=(590, 410), size=(80, 30))
 
         self.zeroMomentBtn = wx.Button(self.panel, label="Нулевой момент", pos=(370, 450), size=(140, 30))
         self.Bind(wx.EVT_BUTTON, self.OnZeroMoment, self.zeroMomentBtn)

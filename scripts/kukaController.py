@@ -74,82 +74,100 @@ class KukaController:
         dlg.ShowModal()
         dlg.Destroy()
 
+    def fullFriction(self):
+        data = [
+            [2,3],
+            [1,1.5],
+            [1.2,2],
+            [1.5,3],
+            [2,3],
+        ]
+        for i in range(5):
+            print("exp №"+str(i))
+            self.makeTrapezeSimpleCiclic(i,data[i][0],data[i][1])
+
+
+    def makeTrapezeSimpleCiclic(self,jointNum,arange,maxW):
+        print("big")
+        for i in range(int(maxW*10)-1):
+            joints = [2.01, 1.09, -2.44, 1.74, 2.96]
+            self.spamwriter.writerow([0]*22)
+
+            self.setJointPositions(joints)
+            self.targetType == self.TARGET_TYPE_MANY_JOINTS
+            self.targetJPoses = joints
+            while self.targetType == self.TARGET_TYPE_MANY_JOINTS:
+                time.sleep(0.1)
+
+            time.sleep(0.5)
+            print("in candle")
+            print(maxW-float(i)/10)
+            self.spamwriter.writerow([-1]+[0] * 21)
+            self.makeSimpleTrapeze(jointNum, arange, maxW-float(i)/10)
+        print("little")
+        for i in range(10):
+            joints = [2.01, 1.09, -2.44, 1.74, 2.96]
+            self.spamwriter.writerow([0] * 22)
+
+            self.setJointPositions(joints)
+            self.targetType == self.TARGET_TYPE_MANY_JOINTS
+            self.targetJPoses = joints
+            while self.targetType == self.TARGET_TYPE_MANY_JOINTS:
+                time.sleep(0.1)
+
+            time.sleep(0.5)
+            print("in candle")
+            print(0.1 - float(i) / 100)
+            self.spamwriter.writerow([-1] + [0] * 21)
+            self.makeSimpleTrapeze(jointNum, arange, 0.1 - float(i) / 100)
+
     # трапеция номер джоина, целевое положение, максимальная скорость, ускорение
-    def makeTrapeze(self, jointNum, arange, maxW, betta):
+    def makeSimpleTrapeze(self, jointNum, arange, maxW):
         angleStart = self.jointState.position[jointNum - 1]
-        accAngle = maxW ** 2 / (2 * (betta ** 2))
-        print(accAngle)
         curPos = angleStart
 
         # влев
         while curPos - angleStart < arange:
             curPos = self.jointState.position[jointNum - 1]
-            delta = curPos - angleStart
-            if delta <= accAngle:
-                w = maxW * delta / accAngle
-            elif delta >= arange - accAngle:
-                w = (arange - delta) / accAngle * maxW
-            else:
-                w = maxW
-            if w < 0.01:
-                w = 0.01
-            print("_")
-            print(w)
-            print(curPos - angleStart)
-            self.setJointVelocity(jointNum, w)
+            self.setJointVelocity(jointNum, maxW)
 
         self.setJointVelocity(jointNum, 0)
+
+        rospy.sleep(0.5)
+
         while curPos - angleStart > -arange:
             curPos = self.jointState.position[jointNum - 1]
-            if curPos > angleStart:
-                delta = curPos - angleStart
-                if delta <= accAngle:
-                    w = maxW * delta / accAngle
-                elif delta >= arange - accAngle:
-                    w = (arange - delta) / accAngle * maxW
-                else:
-                    w = maxW
-            else:
-                delta = angleStart - curPos
-                if delta <= accAngle:
-                    w = maxW * delta / accAngle
-                elif delta >= arange - accAngle:
-                    w = (arange - delta) / accAngle * maxW
-                else:
-                    w = maxW
-
-            if w < 0.01:
-                w = 0.01
-
-            print("_")
-            print(w)
-            print(curPos - angleStart)
-            self.setJointVelocity(jointNum, -w)
+            self.setJointVelocity(jointNum, -maxW)
 
         self.setJointVelocity(jointNum, 0)
+
+        rospy.sleep(0.5)
+
+        # влев
+        while curPos - angleStart < arange:
+            curPos = self.jointState.position[jointNum - 1]
+            self.setJointVelocity(jointNum, maxW)
+
+        self.setJointVelocity(jointNum, 0)
+
+        rospy.sleep(0.5)
+
+        while curPos - angleStart > -arange:
+            curPos = self.jointState.position[jointNum - 1]
+            self.setJointVelocity(jointNum, -maxW)
+
+        self.setJointVelocity(jointNum, 0)
+
+        rospy.sleep(0.5)
 
         # в начало
         while curPos < angleStart:
             curPos = self.jointState.position[jointNum - 1]
-
-            delta = angleStart - curPos
-            if delta <= accAngle:
-                w = maxW * delta / accAngle
-            elif delta >= arange - accAngle:
-                w = (arange - delta) / accAngle * maxW
-            else:
-                w = maxW
-
-            if w < 0.01:
-                w = 0.01
-
-            print("_")
-            print(w)
-            print(angleStart-curPos)
-            self.setJointVelocity(jointNum, w)
+            self.setJointVelocity(jointNum, maxW)
 
         self.setJointVelocity(jointNum, 0)
 
+        rospy.sleep(0.5)
 
     def checkPositionXYZEnable(self, pos):
         x = pos[0]
@@ -220,11 +238,12 @@ class KukaController:
         # созраняем пришедшее значение
         self.jointState = data
         sum = 0
+        self.spamwriter.writerow((time.time(),) + data.position + data.velocity + data.effort)
         if self.targetType == self.TARGET_TYPE_MANY_JOINTS:
             for i in range(5):
                 delta = (self.targetJPoses[i] - data.position[i])
                 sum += delta * delta
-            self.spamwriter.writerow((time.time(),) + data.position + data.velocity + data.effort)
+
             sum = math.sqrt(sum) / 5
         elif self.targetType == self.TARGET_TYPE_ONE_JOINT:
             sum = abs(self.targetJPos - data.position[self.targetJposNum])
