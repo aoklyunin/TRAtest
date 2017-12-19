@@ -17,9 +17,9 @@ class Frame(wx.Frame):
     # записать полученную от куки дату в таблицу
     def setDataToGrid(self, data):
         for i in range(len(data.position)):
-            #if i < 5:
+            # if i < 5:
             #    s = self.kuka.jointOffsets[i]
-            #else:
+            # else:
             s = 0
             self.myGrid.SetCellValue(i, 0, ("%.2f" % (data.position[i] + s)))
             self.myGrid.SetCellValue(i, 1, ("%.2f" % data.velocity[i]))
@@ -85,6 +85,7 @@ class Frame(wx.Frame):
     def OnTimer(self, event):
         self.setDataToGrid(self.kuka.jointState)
         self.setDHChords()
+
         pass
 
         # события по таймеру
@@ -118,7 +119,7 @@ class Frame(wx.Frame):
         pass
 
     def OnRandomJPos(self, event):
-        self.kuka.randomPoints(int(self.randomTex.GetValue()))
+        self.kuka.randomPoints(int(self.randomTex.GetValue()), 0.5)
         pass
 
     def OnStopJSpeed(self, event):
@@ -143,19 +144,18 @@ class Frame(wx.Frame):
         ))
 
     def OnFullFriction(self, event):
-            print (self.kuka.makeTrapezeSimpleCiclic(
-                int(self.frictionJNumTex.GetValue()),
-                float(self.frictionAngleEndTex.GetValue()),
-                float(self.frictionMaxWTex.GetValue())
-            ))
+        self.kuka.fullFriction()
 
-
-
-    def OnZeroMoment(self,event):
-        #self.kuka.zeroMomentInJoint(int(self.zeroMomentTex.GetValue()))
+    def OnZeroMoment(self, event):
+        self.kuka.zeroMomentInJoint(int(self.zeroMomentTex.GetValue()))
         pass
 
+    def OnWarmUp(self, event):
+        self.kuka.warmUpLink(int(self.warmUpNumTex.GetValue()), float(self.warmUpTimeTex.GetValue()))
+        pass
 
+    def OnGravityFind(self,event):
+        self.kuka.gravitationFind()
 
     # конструктор
     def __init__(self, parent=None, id=-1, title='', pos=(0, 0), size=(690, 900)):
@@ -264,7 +264,7 @@ class Frame(wx.Frame):
         self.frictionBtn = wx.Button(self.panel, label="Friction", pos=(320, 380), size=(120, 30))
         self.Bind(wx.EVT_BUTTON, self.OnFriction, self.frictionBtn)
 
-        self.frictionFullBtn = wx.Button(self.panel, label="FullFriction", pos=(400, 380), size=(120, 30))
+        self.frictionFullBtn = wx.Button(self.panel, label="FullFriction", pos=(440, 380), size=(120, 30))
         self.Bind(wx.EVT_BUTTON, self.OnFullFriction, self.frictionFullBtn)
 
         self.frictionJNumTex = wx.TextCtrl(self.panel, -1, '1', pos=(320, 410), size=(80, 30))
@@ -274,6 +274,18 @@ class Frame(wx.Frame):
         self.zeroMomentBtn = wx.Button(self.panel, label="Нулевой момент", pos=(370, 450), size=(140, 30))
         self.Bind(wx.EVT_BUTTON, self.OnZeroMoment, self.zeroMomentBtn)
         self.zeroMomentTex = wx.TextCtrl(self.panel, -1, '4', pos=(320, 450), size=(40, 30))
+
+        self.warmUpBtn = wx.Button(self.panel, label="Разогрев", pos=(420, 490), size=(140, 30))
+        self.Bind(wx.EVT_BUTTON, self.OnWarmUp, self.warmUpBtn)
+        self.warmUpNumTex = wx.TextCtrl(self.panel, -1, '4', pos=(320, 490), size=(40, 30))
+        self.warmUpTimeTex = wx.TextCtrl(self.panel, -1, '0.5', pos=(370, 490), size=(40, 30))
+
+        self.gravityFindBtn = wx.Button(self.panel, label="Гравитация", pos=(470, 650), size=(140, 30))
+        self.Bind(wx.EVT_BUTTON, self.OnGravityFind, self.gravityFindBtn)
+        # управление гриппером
+        wx.StaticText(self.panel, -1, "X:0 ", (440, 570))
+        wx.StaticText(self.panel, -1, "Y:0 ", (490, 570))
+        wx.StaticText(self.panel, -1, "Z:0 ", (540, 570))
 
     # инициализация таблицы
     def initGrid(self):

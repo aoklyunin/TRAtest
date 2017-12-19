@@ -37,6 +37,8 @@ class KukaController:
     ]
     L = [33, 147, 155, 135, 217.5]
 
+    task = [0, 0, 0, 0, 0, 0, 0]
+
     TARGET_TYPE_MANY_JOINTS = 0
     TARGET_TYPE_ONE_JOINT = 1
     TARGET_TYPE_NO_TARGET = -1
@@ -45,6 +47,7 @@ class KukaController:
     targetJPos = 0
     targetJposNum = -1
     targetType = TARGET_TYPE_NO_TARGET
+    startTime = 0
 
     jointOffsets = [
         -170.0 / 180 * math.pi,
@@ -76,53 +79,51 @@ class KukaController:
 
     def fullFriction(self):
         data = [
-            [2,3],
-            [1,1.5],
-            [1.2,2],
-            [1.5,3],
-            [2,3],
+            [2, 3],
+            [1, 1.5],
+            [1.2, 2],
+            [1.5, 3],
+            [2, 3],
         ]
         for i in range(5):
-            print("exp №"+str(i))
-            self.makeTrapezeSimpleCiclic(i,data[i][0],data[i][1])
+            print("exp №" + str(i))
+            self.makeTrapezeSimpleCiclic(i, data[i][0], data[i][1])
 
+    def inCandleWithWaiting(self):
+        joints = [2.01, 1.09, -2.44, 1.74, 2.96]
+        self.setJointPositions(joints)
+        self.targetType == self.TARGET_TYPE_MANY_JOINTS
+        self.targetJPoses = joints
+        while self.targetType == self.TARGET_TYPE_MANY_JOINTS:
+            time.sleep(0.1)
 
-    def makeTrapezeSimpleCiclic(self,jointNum,arange,maxW):
+    def makeTrapezeSimpleCiclic(self, jointNum, arange, maxW):
         print("big")
-        for i in range(int(maxW*10)-1):
-            joints = [2.01, 1.09, -2.44, 1.74, 2.96]
-            self.spamwriter.writerow([0]*22)
-
-            self.setJointPositions(joints)
-            self.targetType == self.TARGET_TYPE_MANY_JOINTS
-            self.targetJPoses = joints
-            while self.targetType == self.TARGET_TYPE_MANY_JOINTS:
-                time.sleep(0.1)
-
-            time.sleep(0.5)
+        for i in range(int(maxW) * 5 - 5):
+            self.inCandleWithWaiting()
             print("in candle")
-            print(maxW-float(i)/10)
-            self.spamwriter.writerow([-1]+[0] * 21)
-            self.makeSimpleTrapeze(jointNum, arange, maxW-float(i)/10)
+            time.sleep(0.5)
+            print(maxW - float(i) / 5)
+            self.makeSimpleTrapeze(jointNum, arange, maxW - float(i) / 5, 20)
+
+        print("middle")
+        for i in range(9):
+            self.inCandleWithWaiting()
+            print("in candle")
+            time.sleep(0.5)
+            print(1 - float(i) / 10)
+            self.makeSimpleTrapeze(jointNum, arange, 1 - float(i) / 10, 10)
+
         print("little")
         for i in range(10):
-            joints = [2.01, 1.09, -2.44, 1.74, 2.96]
-            self.spamwriter.writerow([0] * 22)
-
-            self.setJointPositions(joints)
-            self.targetType == self.TARGET_TYPE_MANY_JOINTS
-            self.targetJPoses = joints
-            while self.targetType == self.TARGET_TYPE_MANY_JOINTS:
-                time.sleep(0.1)
-
-            time.sleep(0.5)
+            self.inCandleWithWaiting()
             print("in candle")
+            time.sleep(0.5)
             print(0.1 - float(i) / 100)
-            self.spamwriter.writerow([-1] + [0] * 21)
-            self.makeSimpleTrapeze(jointNum, arange, 0.1 - float(i) / 100)
+            self.makeSimpleTrapeze(jointNum, arange, 0.1 - float(i) / 100, 5)
 
     # трапеция номер джоина, целевое положение, максимальная скорость, ускорение
-    def makeSimpleTrapeze(self, jointNum, arange, maxW):
+    def makeSimpleTrapeze(self, jointNum, arange, maxW, repeatCnt):
         angleStart = self.jointState.position[jointNum - 1]
         curPos = angleStart
 
@@ -133,32 +134,23 @@ class KukaController:
 
         self.setJointVelocity(jointNum, 0)
 
-        rospy.sleep(0.5)
+        for i in range(repeatCnt):
+            rospy.sleep(0.5)
 
-        while curPos - angleStart > -arange:
-            curPos = self.jointState.position[jointNum - 1]
-            self.setJointVelocity(jointNum, -maxW)
+            while curPos - angleStart > -arange:
+                curPos = self.jointState.position[jointNum - 1]
+                self.setJointVelocity(jointNum, -maxW)
 
-        self.setJointVelocity(jointNum, 0)
+            self.setJointVelocity(jointNum, 0)
 
-        rospy.sleep(0.5)
+            rospy.sleep(0.5)
 
-        # влев
-        while curPos - angleStart < arange:
-            curPos = self.jointState.position[jointNum - 1]
-            self.setJointVelocity(jointNum, maxW)
+            # влев
+            while curPos - angleStart < arange:
+                curPos = self.jointState.position[jointNum - 1]
+                self.setJointVelocity(jointNum, maxW)
 
-        self.setJointVelocity(jointNum, 0)
-
-        rospy.sleep(0.5)
-
-        while curPos - angleStart > -arange:
-            curPos = self.jointState.position[jointNum - 1]
-            self.setJointVelocity(jointNum, -maxW)
-
-        self.setJointVelocity(jointNum, 0)
-
-        rospy.sleep(0.5)
+            self.setJointVelocity(jointNum, 0)
 
         # в начало
         while curPos < angleStart:
@@ -182,12 +174,51 @@ class KukaController:
 
     def checkPositionJEnabled(self, joints):
         xyz = self.getEndEffectorPosByJ(joints)
+        print(xyz)
         return self.checkPositionXYZEnable(xyz)
 
-    def randomPoints(self, n):
+    def warmUpLink(self, n, t):
+        startTime = time.time()
+        while (time.time() - startTime < t * 60):
+            pos = random.uniform(self.jointsRange[n - 1][0], self.jointsRange[n - 1][1])
+            self.setJointPosition(n, pos)
+            time.sleep(0.5)
+        pass
+
+    def setPosAndWait(self, joints):
+        if self.checkPositionJEnabled(joints):
+            self.setJointPositions(joints)
+            self.targetType == self.TARGET_TYPE_MANY_JOINTS
+            self.targetJPoses = joints
+            for k in range(5):
+                self.task[k] = joints[k]
+            cnt = 0
+            while self.targetType == self.TARGET_TYPE_MANY_JOINTS and cnt < 5:
+                time.sleep(0.5)
+                cnt += 1
+            return True
+        return False
+
+    def gravitationFind(self):
+        for y in range(int((self.jointsRange[1][0] + 0) * 5), int((self.jointsRange[1][1] - 0) * 5)):
+            valJ2 = float(y) / 10
+            for k in range(int((self.jointsRange[2][0] + 0) * 5), int((self.jointsRange[2][1] - 0) * 5)):
+                valJ3 = float(k) / 10
+                for j in range(int((self.jointsRange[3][0] + 0.5) * 5), int((self.jointsRange[3][1] - 0) * 5)):
+                    valJ4 = float(j) / 5
+                    for i in range(4):
+                        valJ5 = 3.14 / 4 * float(i)
+                        print("%.3f %.3f %.3f %.3f" % (valJ5, valJ4, valJ3, valJ2,))
+                        self.setPosAndWait([2.01, valJ2, valJ3, valJ4, valJ5])
+                        time.sleep(0.5)
+                        # for i in range(int((self.jointsRange[4][0] + 1.5) * 5), int((self.jointsRange[4][1] - 1.5) * 5)):
+                        #         val = float(i) / 10
+                        #         print(val)
+
+    def randomPoints(self, n, tp):
         for i in range(n):
             print(i)
-            time.sleep(7)
+            time.sleep(tp)
             flgCreated = False
             while not flgCreated:
                 joints = []
@@ -200,9 +231,13 @@ class KukaController:
                     self.setJointPositions(joints)
                     self.targetType == self.TARGET_TYPE_MANY_JOINTS
                     self.targetJPoses = joints
+                    for k in range(5):
+                        self.task[k] = joints[k]
 
             while self.targetType == self.TARGET_TYPE_MANY_JOINTS:
                 time.sleep(1)
+
+            self.task = [0] * 7
 
         self.warn("Робот отработал все точки")
 
@@ -238,7 +273,14 @@ class KukaController:
         # созраняем пришедшее значение
         self.jointState = data
         sum = 0
-        self.spamwriter.writerow((time.time(),) + data.position + data.velocity + data.effort)
+        logStr = "%.4f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f\n" % (
+            time.time() - self.startTime,
+            data.position[0], data.position[1], data.position[2], data.position[3], data.position[4],
+            data.velocity[0], data.position[1], data.velocity[2], data.velocity[3], data.velocity[4],
+            data.effort[0], data.effort[1], data.effort[2], data.effort[3], data.effort[4],
+            self.task[0], self.task[1], self.task[2], self.task[3], self.task[4],
+        )
+        self.outLog.write(logStr)
         if self.targetType == self.TARGET_TYPE_MANY_JOINTS:
             for i in range(5):
                 delta = (self.targetJPoses[i] - data.position[i])
@@ -272,25 +314,43 @@ class KukaController:
         dt = datetime.datetime.now()
         date = dt.strftime("%d_%m_%Y_%I_%M%p")
         self.outLog = open('logs/' + date + '.csv', 'wb')
-        self.spamwriter = csv.writer(self.outLog, delimiter=' ',
-                                     escapechar=' ', quoting=csv.QUOTE_NONE)
+        self.startTime = time.time()
         # пауза необходима для правильной обработки пакетов
         rospy.sleep(1)
         rospy.loginfo("Kuka created")
 
+    def zeroMomentA(self, j):
+        print("A")
+        D = 0.3
+        candlePosJ4 = 1.74
+        for i in range(20):
+            print(i)
+            offset = random.uniform(-D, D)
+            targetPos = candlePosJ4 + offset
+            self.setJointPosition(j, targetPos)
+            rospy.sleep(3)
+
+    def zeroMomentB(self, j):
+        print("B")
+        D = 0.3
+        candlePosJ4 = 1.74
+        for i in range(int(D * 200)):
+            targetPos = (D + candlePosJ4 - float(i) / 100)
+            print(targetPos)
+            self.setJointPosition(j, targetPos)
+            rospy.sleep(3)
+
+        for i in range(int(D * 200)):
+            targetPos = (candlePosJ4 - D + float(i) / 100)
+            print(targetPos)
+            self.setJointPosition(j, targetPos)
+            rospy.sleep(3)
+
     # подогнать джоинт так, чтобы момент в нём был нулевым(работает коряво, впадлу пока допиливать)
     def zeroMomentInJoint(self, j):
-        for i in range(10):
-            curPos = self.jointState.position[j - 1]
-            curMoment = self.jointState.effort[j - 1]
-            posStar = curMoment / 2 + curPos
-            print(curPos)
-            print(posStar)
-            self.setJointPosition(j, posStar)
-            self.targetType = self.TARGET_TYPE_ONE_JOINT
-            self.targetJPos = posStar
-            self.targetJposNum = j
-            rospy.sleep(2)
+        for i in range(30):
+            self.zeroMomentA(j)
+            self.zeroMomentB(j)
 
     # получаем по типу топика размерность
     def getUnitValue(self, tp):
@@ -465,6 +525,7 @@ class KukaController:
 
     # задаём скорости всех джоинтов подробнее смотри setJointPositions
     def setJointVelocity(self, joint_num, value):
+        self.task[joint_num - 1] = value
         msg = brics_actuator.msg.JointVelocities()
         msg.velocities = [self.generateJoinVal(joint_num, value, self.TYPE_JOINT_VELOCITIES)]
         self.velocityArmPub.publish(msg)
