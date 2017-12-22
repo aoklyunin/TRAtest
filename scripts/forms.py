@@ -5,6 +5,7 @@ import wx
 import wx.grid as gridlib
 
 from kukaController import KukaController
+from kinematic import getG
 
 
 class Frame(wx.Frame):
@@ -16,6 +17,7 @@ class Frame(wx.Frame):
 
     # записать полученную от куки дату в таблицу
     def setDataToGrid(self, data):
+        G = getG(data.position)
         for i in range(len(data.position)):
             # if i < 5:
             #    s = self.kuka.jointOffsets[i]
@@ -24,7 +26,13 @@ class Frame(wx.Frame):
             self.myGrid.SetCellValue(i, 0, ("%.2f" % (data.position[i] + s)))
             self.myGrid.SetCellValue(i, 1, ("%.2f" % data.velocity[i]))
             self.myGrid.SetCellValue(i, 2, ("%.2f" % data.effort[i]))
+            if i < 5:
+                self.myGrid.SetCellValue(i, 3, ("%.2f" % G[i]))
+                self.myGrid.SetCellValue(i, 4, ("%.2f" %  self.kuka.overG[i] ))
         pass
+
+    def OnForceControl(self,event):
+        self.kuka.forceControl()
 
     # получить углы из полей ввобда джоинтов
     def getJoinfFromText(self):
@@ -85,7 +93,10 @@ class Frame(wx.Frame):
     def OnTimer(self, event):
         self.setDataToGrid(self.kuka.jointState)
         self.setDHChords()
-
+        if self.kuka.checkCurPositionEnabled():
+            self.posEnabledTex.SetLabel("Enabled")
+        else:
+            self.posEnabledTex.SetLabel("Disabled")
         pass
 
         # события по таймеру
@@ -258,6 +269,8 @@ class Frame(wx.Frame):
         self.posYTex = wx.TextCtrl(self.panel, -1, '0', pos=(120, 450), size=(80, 30))
         self.posZTex = wx.TextCtrl(self.panel, -1, '0', pos=(210, 450), size=(80, 30))
 
+        self.posEnabledTex = wx.StaticText(self.panel, -1, "Enabled", (30, 500))
+
         self.candleBtn = wx.Button(self.panel, label="В свечку", pos=(320, 330), size=(120, 30))
         self.Bind(wx.EVT_BUTTON, self.OnCandle, self.candleBtn)
 
@@ -282,10 +295,10 @@ class Frame(wx.Frame):
 
         self.gravityFindBtn = wx.Button(self.panel, label="Гравитация", pos=(470, 650), size=(140, 30))
         self.Bind(wx.EVT_BUTTON, self.OnGravityFind, self.gravityFindBtn)
-        # управление гриппером
-        wx.StaticText(self.panel, -1, "X:0 ", (440, 570))
-        wx.StaticText(self.panel, -1, "Y:0 ", (490, 570))
-        wx.StaticText(self.panel, -1, "Z:0 ", (540, 570))
+
+        self.ForceControlBtn = wx.Button(self.panel, label="ForceControl", pos=(470, 690), size=(140, 30))
+        self.Bind(wx.EVT_BUTTON, self.OnForceControl, self.ForceControlBtn)
+
 
     # инициализация таблицы
     def initGrid(self):
@@ -293,8 +306,10 @@ class Frame(wx.Frame):
         self.myGrid = gridlib.Grid(self.panel)
         # кол-во строк и столбцов
         # нумерация в таблице начинается с ячейки (0,0)
-        self.myGrid.CreateGrid(7, 3)
+        self.myGrid.CreateGrid(7, 5)
         # задаём имена столбцов
+        self.myGrid.SetColLabelValue(4, "Ошибка")
+        self.myGrid.SetColLabelValue(3, "Расчёт")
         self.myGrid.SetColLabelValue(2, "Момент")
         self.myGrid.SetColLabelValue(1, "Скорость")
         self.myGrid.SetColLabelValue(0, "Положение")

@@ -21,7 +21,7 @@ import sensor_msgs.msg
 #   -можно попробовать задавать скорости в 0
 import time
 
-from kinematic import getDHMatrix
+from kinematic import getDHMatrix, getG
 
 
 class KukaController:
@@ -70,7 +70,24 @@ class KukaController:
     # ответные данные, полученные от куки
     jointState = sensor_msgs.msg.JointState()
 
+    overG = [0] * 5
+    G_ERROR_RANGE = [1.5, 1.5 , 0.7, 0.5, 0.2]
+    G_K = [0.2, 0.1, 0.07, 0.3, 0.5]
+    MAX_V = [0.4, 0.4, 0.4, 0.4, 0.4]
+
     reachedAction = False
+
+    def forceControl(self):
+        targetVel = [0] * 7
+        while (True):
+            for i in range(5):
+                targetVel[i] = -self.overG[i] * self.G_K[i]
+                if abs(targetVel[i]) > self.MAX_V[i]:
+                    targetVel[i] = np.sign(targetVel[i]) * self.MAX_V[i]
+
+            print(targetVel)
+            self.setJointVelocities(targetVel)
+            time.sleep(0.1)
 
     def warn(self, message, caption='Ае!'):
         dlg = wx.MessageDialog(None, message, caption, wx.OK | wx.ICON_WARNING)
@@ -165,16 +182,17 @@ class KukaController:
         x = pos[0]
         y = pos[1]
         z = pos[2]
-        if abs(x) < 90 or abs(y) < 90:
+        if z < 150:
             return False
-        if z < 80:
-            return False
+        elif z < 220:
+            return x ** 2 + y ** 2 > 350 ** 2
 
         return True
 
     def checkPositionJEnabled(self, joints):
         xyz = self.getEndEffectorPosByJ(joints)
-        print(xyz)
+
+        # print(xyz)
         return self.checkPositionXYZEnable(xyz)
 
     def warmUpLink(self, n, t):
@@ -200,20 +218,25 @@ class KukaController:
         return False
 
     def gravitationFind(self):
-        for y in range(int((self.jointsRange[1][0] + 0) * 5), int((self.jointsRange[1][1] - 0) * 5)):
-            valJ2 = float(y) / 10
+        for y in range(int((self.jointsRange[1][0] - 0) * 5), int((self.jointsRange[1][1] - 0) * 5)):
+            valJ2 = float(y) / 5
             for k in range(int((self.jointsRange[2][0] + 0) * 5), int((self.jointsRange[2][1] - 0) * 5)):
-                valJ3 = float(k) / 10
+                valJ3 = float(k) / 5
                 for j in range(int((self.jointsRange[3][0] + 0.5) * 5), int((self.jointsRange[3][1] - 0) * 5)):
                     valJ4 = float(j) / 5
                     for i in range(4):
                         valJ5 = 3.14 / 4 * float(i)
                         print("%.3f %.3f %.3f %.3f" % (valJ5, valJ4, valJ3, valJ2,))
-                        self.setPosAndWait([2.01, valJ2, valJ3, valJ4, valJ5])
-                        time.sleep(0.5)
-                        # for i in range(int((self.jointsRange[4][0] + 1.5) * 5), int((self.jointsRange[4][1] - 1.5) * 5)):
-                        #         val = float(i) / 10
-                        #         print(val)
+                        if self.setPosAndWait([2.01, valJ2, valJ3, valJ4, valJ5]):
+                            time.sleep(2.5)
+                            # for i in range(int((self.jointsRange[4][0] + 1.5) * 5), int((self.jointsRange[4][1] - 1.5) * 5)):
+                            #         val = float(i) / 10
+                            #         print(val)
+
+    def checkCurPositionEnabled(self):
+        xyz = self.getEndEffectorPosByJ(self.jointState.position)
+        # print(xyz)
+        return self.checkPositionXYZEnable(xyz)
 
     def randomPoints(self, n, tp):
         for i in range(n):
@@ -268,10 +291,19 @@ class KukaController:
                 flg = False
         return flg
 
+    def calculateOverG(self):
+        G = getG(self.jointState.position)
+        for i in range(5):
+            self.overG[i] = self.jointState.effort[i] - G[i]
+            if abs(self.overG[i]) < self.G_ERROR_RANGE[i]:
+                self.overG[i] = 0
+
+
     # обработчик пришедших значенийitem
     def jointStateCallback(self, data):
         # созраняем пришедшее значение
         self.jointState = data
+        self.calculateOverG()
         sum = 0
         logStr = "%.4f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f\n" % (
             time.time() - self.startTime,
@@ -280,6 +312,7 @@ class KukaController:
             data.effort[0], data.effort[1], data.effort[2], data.effort[3], data.effort[4],
             self.task[0], self.task[1], self.task[2], self.task[3], self.task[4],
         )
+
         self.outLog.write(logStr)
         if self.targetType == self.TARGET_TYPE_MANY_JOINTS:
             for i in range(5):
