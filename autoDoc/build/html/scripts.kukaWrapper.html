@@ -1,0 +1,746 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>scripts.kukaWrapper package &#8212; Документация TraTest 1</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Алфавитный указатель" href="genindex.html" />
+    <link rel="search" title="Поиск" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="scripts-kukawrapper-package">
+<h1>scripts.kukaWrapper package<a class="headerlink" href="#scripts-kukawrapper-package" title="Ссылка на этот заголовок">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Ссылка на этот заголовок">¶</a></h2>
+</div>
+<div class="section" id="module-scripts.kukaWrapper.forms">
+<span id="scripts-kukawrapper-forms-module"></span><h2>scripts.kukaWrapper.forms module<a class="headerlink" href="#module-scripts.kukaWrapper.forms" title="Ссылка на этот заголовок">¶</a></h2>
+<p>Родительский модуль для описания окна приложения</p>
+<dl class="class">
+<dt id="scripts.kukaWrapper.forms.Frame">
+<em class="property">class </em><code class="descclassname">scripts.kukaWrapper.forms.</code><code class="descname">Frame</code><span class="sig-paren">(</span><em>parent=None</em>, <em>id=-1</em>, <em>title=''</em>, <em>pos=(0</em>, <em>0)</em>, <em>size=(690</em>, <em>900)</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.forms.Frame" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>Базовые классы: <code class="xref py py-class docutils literal"><span class="pre">wx._windows.Frame</span></code></div></blockquote>
+<p>Класс для описания окна приложения</p>
+<dl class="method">
+<dt id="scripts.kukaWrapper.forms.Frame.ExpTimer">
+<code class="descname">ExpTimer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.forms.Frame.ExpTimer" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Таймер для экспериментов. Срабатывает раз в пол-секунды</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.forms.Frame.OnCandle">
+<code class="descname">OnCandle</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.forms.Frame.OnCandle" title="Ссылка на это определение">¶</a></dt>
+<dd><p>отправить робота в свечку</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.forms.Frame.OnSendGPos">
+<code class="descname">OnSendGPos</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.forms.Frame.OnSendGPos" title="Ссылка на это определение">¶</a></dt>
+<dd><p>управление гриппером по положению</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.forms.Frame.OnSendGTor">
+<code class="descname">OnSendGTor</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.forms.Frame.OnSendGTor" title="Ссылка на это определение">¶</a></dt>
+<dd><p>управление гриппером по скоростям</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.forms.Frame.OnSendGVel">
+<code class="descname">OnSendGVel</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.forms.Frame.OnSendGVel" title="Ссылка на это определение">¶</a></dt>
+<dd><p>управление гриппером по положению</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.forms.Frame.OnSendJPos">
+<code class="descname">OnSendJPos</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.forms.Frame.OnSendJPos" title="Ссылка на это определение">¶</a></dt>
+<dd><p>управление положением по джоинтам</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.forms.Frame.OnSendJTor">
+<code class="descname">OnSendJTor</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.forms.Frame.OnSendJTor" title="Ссылка на это определение">¶</a></dt>
+<dd><p>управление моментами по джоинтам</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.forms.Frame.OnSendJVel">
+<code class="descname">OnSendJVel</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.forms.Frame.OnSendJVel" title="Ссылка на это определение">¶</a></dt>
+<dd><p>управление скоростями по джоинтам</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.forms.Frame.OnStopKuka">
+<code class="descname">OnStopKuka</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.forms.Frame.OnStopKuka" title="Ссылка на это определение">¶</a></dt>
+<dd><p>остановить движение робота</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.forms.Frame.OnTest">
+<code class="descname">OnTest</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.forms.Frame.OnTest" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Тестовый метод</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.forms.Frame.OnTimer">
+<code class="descname">OnTimer</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.forms.Frame.OnTimer" title="Ссылка на это определение">¶</a></dt>
+<dd><p>события по таймеру 2Гц</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.forms.Frame.OnUpdateJPos">
+<code class="descname">OnUpdateJPos</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.forms.Frame.OnUpdateJPos" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Обновить положения робота в полях ввода</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.forms.Frame.OnZeroJPos">
+<code class="descname">OnZeroJPos</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.forms.Frame.OnZeroJPos" title="Ссылка на это определение">¶</a></dt>
+<dd><p>обнулить положения робота</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.forms.Frame.getJoinfFromText">
+<code class="descname">getJoinfFromText</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.forms.Frame.getJoinfFromText" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>получить углы из полей ввобда джоинтов</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Результат:</th><td class="field-body">массив обощённых координат робота</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.forms.Frame.initControlItems">
+<code class="descname">initControlItems</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.forms.Frame.initControlItems" title="Ссылка на это определение">¶</a></dt>
+<dd><p>инициализирует элементы управления</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.forms.Frame.initExpItems">
+<code class="descname">initExpItems</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.forms.Frame.initExpItems" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Инициализация элементов управления экспериментами</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.forms.Frame.initGrid">
+<code class="descname">initGrid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.forms.Frame.initGrid" title="Ссылка на это определение">¶</a></dt>
+<dd><p>инициализация таблицу</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.forms.Frame.onClose">
+<code class="descname">onClose</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.forms.Frame.onClose" title="Ссылка на это определение">¶</a></dt>
+<dd><p>закрытие формы</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.forms.Frame.setDHChords">
+<code class="descname">setDHChords</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.forms.Frame.setDHChords" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Задать координаты в декартовом пространстве</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.forms.Frame.setDataToGrid">
+<code class="descname">setDataToGrid</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.forms.Frame.setDataToGrid" title="Ссылка на это определение">¶</a></dt>
+<dd><p>записать полученную от куки дату в таблицу</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-scripts.kukaWrapper.kinematic">
+<span id="scripts-kukawrapper-kinematic-module"></span><h2>scripts.kukaWrapper.kinematic module<a class="headerlink" href="#module-scripts.kukaWrapper.kinematic" title="Ссылка на этот заголовок">¶</a></h2>
+<p>Модуль математических вычислений</p>
+<dl class="function">
+<dt id="scripts.kukaWrapper.kinematic.getDHMatrix">
+<code class="descclassname">scripts.kukaWrapper.kinematic.</code><code class="descname">getDHMatrix</code><span class="sig-paren">(</span><em>alpha</em>, <em>a</em>, <em>d</em>, <em>theta</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kinematic.getDHMatrix" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>Возвращает матрицу преобразования</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><strong>a</strong><strong>, </strong><strong>d</strong><strong>, </strong><strong>theta</strong> (<em>alpha</em><em>,</em>) – DH параметры</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Результат:</th><td class="field-body">Матрица перехода  4х4</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="scripts.kukaWrapper.kinematic.getG">
+<code class="descclassname">scripts.kukaWrapper.kinematic.</code><code class="descname">getG</code><span class="sig-paren">(</span><em>qList</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kinematic.getG" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>Значение моментов по положению</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><strong>qList</strong> – массив из пяти обощённых координат</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Результат:</th><td class="field-body">массив из пяти моментов</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-scripts.kukaWrapper.kukaWrapper">
+<span id="scripts-kukawrapper-kukawrapper-module"></span><h2>scripts.kukaWrapper.kukaWrapper module<a class="headerlink" href="#module-scripts.kukaWrapper.kukaWrapper" title="Ссылка на этот заголовок">¶</a></h2>
+<p>Родительский модуль для управления кукой</p>
+<dl class="class">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper">
+<em class="property">class </em><code class="descclassname">scripts.kukaWrapper.kukaWrapper.</code><code class="descname">KukaWrapper</code><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Родительский класс для управления кукой</p>
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.calculateOverG">
+<code class="descname">calculateOverG</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.calculateOverG" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>посчитать избыточные моменты</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Результат:</th><td class="field-body">массив(список) избыточных моментов на каждом звене</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.checkCurPositionEnabled">
+<code class="descname">checkCurPositionEnabled</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.checkCurPositionEnabled" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>проверить, что текущее положение допустимо(это нужно для проверки рассчётов допустимой зоны)</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Результат:</th><td class="field-body">True/False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.checkIfListIsZero">
+<code class="descname">checkIfListIsZero</code><span class="sig-paren">(</span><em>lst</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.checkIfListIsZero" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>проверить, что список состоит из нулей</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><strong>lst</strong> – массив(список)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Результат:</th><td class="field-body">True/False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.checkPositionJEnabled">
+<code class="descname">checkPositionJEnabled</code><span class="sig-paren">(</span><em>joints</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.checkPositionJEnabled" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>проверка, что положение допустимо</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><strong>joints</strong> – обобщённые координаты</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Результат:</th><td class="field-body">True/False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.checkPositionXYZEnable">
+<code class="descname">checkPositionXYZEnable</code><span class="sig-paren">(</span><em>pos</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.checkPositionXYZEnable" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>проверка, что положение допустимо</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><strong>pos</strong> – координаты в декартовом пространстве</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Результат:</th><td class="field-body">True/False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.generateJoinVal">
+<code class="descname">generateJoinVal</code><span class="sig-paren">(</span><em>joint_num</em>, <em>val</em>, <em>tp</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.generateJoinVal" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>генерируем сообщение по одному звену для роса</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><ul class="first simple">
+<li><strong>joint_num</strong> – номер звена</li>
+<li><strong>val</strong> – значение</li>
+<li><strong>tp</strong> – единица измерения</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Результат:</th><td class="field-body"><p class="first last">сообщение по одному звену</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.getDH">
+<code class="descname">getDH</code><span class="sig-paren">(</span><em>position</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.getDH" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>по положению получаем матрицу перехода из энд-эффектора в асолютную систему координат</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><strong>position</strong> – массив из пяти элементов с обобщёнными координатами робота</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Результат:</th><td class="field-body">Матрица преобразования 4х4</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.getEndEffectorPos">
+<code class="descname">getEndEffectorPos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.getEndEffectorPos" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>получить положение энд-эффектора</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Результат:</th><td class="field-body">Массив декартовых координат [x,y,z]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.getEndEffectorPosByJ">
+<code class="descname">getEndEffectorPosByJ</code><span class="sig-paren">(</span><em>joints</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.getEndEffectorPosByJ" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>Возвращает положение энд-эффектора по обобщённым координтатам</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><strong>joints</strong> – массив из пяти элементов с обобщёнными координатами робота</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Результат:</th><td class="field-body">Массив декартовых координат [x,y,z]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.getTF">
+<code class="descname">getTF</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.getTF" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>Текущая матрица преобразования робота</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Результат:</th><td class="field-body">Матрица преобразования 4х4</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.getUnitValue">
+<code class="descname">getUnitValue</code><span class="sig-paren">(</span><em>tp</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.getUnitValue" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>получаем по типу топика размерность</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><strong>tp</strong> – Топик</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Результат:</th><td class="field-body">размерность измеряемой величины</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.inCandleWithWaiting">
+<code class="descname">inCandleWithWaiting</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.inCandleWithWaiting" title="Ссылка на это определение">¶</a></dt>
+<dd><p>В свечу с режимом ожидания</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.jointStateCallback">
+<code class="descname">jointStateCallback</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.jointStateCallback" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>обработчик пришедших показаний датчика из роса</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><strong>data</strong> – Структура роса с показаниями датчика</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.randomPoints">
+<code class="descname">randomPoints</code><span class="sig-paren">(</span><em>n</em>, <em>tp</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.randomPoints" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>отправить робота в рандомные положения</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong> – кол-во положений</li>
+<li><strong>tp</strong> – пауза в секндах между командами</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Результат:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.setCarrigeVel">
+<code class="descname">setCarrigeVel</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.setCarrigeVel" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>задать скорость каретке</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><strong>y</strong> (<em>x</em><em>,</em>) – линейные перемещения</td>
+</tr>
+</tbody>
+</table>
+<p>:param z:поворот</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.setGripperPositions">
+<code class="descname">setGripperPositions</code><span class="sig-paren">(</span><em>leftG</em>, <em>rightG</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.setGripperPositions" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>управляет положением гриппера в миллиметрах</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><ul class="first last simple">
+<li><strong>leftG</strong> – положение левого пальца</li>
+<li><strong>rightG</strong> – положение правого пальцев</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.setGripperTorques">
+<code class="descname">setGripperTorques</code><span class="sig-paren">(</span><em>leftG</em>, <em>rightG</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.setGripperTorques" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>управляет силой гриппера в Н</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><ul class="first last simple">
+<li><strong>leftG</strong> – сила левого пальца</li>
+<li><strong>rightG</strong> – сила правого пальцев</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.setGripperVelocities">
+<code class="descname">setGripperVelocities</code><span class="sig-paren">(</span><em>leftG</em>, <em>rightG</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.setGripperVelocities" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>управляет скоростью гриппера в мм/с</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><ul class="first last simple">
+<li><strong>leftG</strong> – скорость левого пальца</li>
+<li><strong>rightG</strong> – скорость правого пальцев</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.setJointPosition">
+<code class="descname">setJointPosition</code><span class="sig-paren">(</span><em>joint_num</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.setJointPosition" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>задаёт положение джоинта в радианах</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><ul class="first last simple">
+<li><strong>joint_num</strong> – номер джоинта</li>
+<li><strong>value</strong> – угол поворота</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.setJointPositions">
+<code class="descname">setJointPositions</code><span class="sig-paren">(</span><em>joints</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.setJointPositions" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>задаём положения джоинтов в радианах</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><strong>joints</strong> – массив из пяти элементов с желаемыми положениями</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.setJointTorque">
+<code class="descname">setJointTorque</code><span class="sig-paren">(</span><em>joint_num</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.setJointTorque" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>задаёт момент джоинта в Н*м</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><ul class="first last simple">
+<li><strong>joint_num</strong> – номер джоинта</li>
+<li><strong>value</strong> – желаемый момент</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.setJointTorques">
+<code class="descname">setJointTorques</code><span class="sig-paren">(</span><em>joints</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.setJointTorques" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>задаёт моменты джоинтов в Н*м</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><strong>joints</strong> – массив из пяти элементов с желаемыми моментами</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.setJointVelocities">
+<code class="descname">setJointVelocities</code><span class="sig-paren">(</span><em>joints</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.setJointVelocities" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>задаёт скорость джоинта в рад/с</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><ul class="first last simple">
+<li><strong>joint_num</strong> – номер джоинта</li>
+<li><strong>value</strong> – желаемая скорость</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.setJointVelocity">
+<code class="descname">setJointVelocity</code><span class="sig-paren">(</span><em>joint_num</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.setJointVelocity" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>задаёт скорости джоинтов в рад/с</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><strong>joints</strong> – массив из пяти элементов с желаемыми скорости</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.setPosAndWait">
+<code class="descname">setPosAndWait</code><span class="sig-paren">(</span><em>joints</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.setPosAndWait" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>отправить в позицию и ждать, пока робот в неё не придёт</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><strong>joints</strong> – обобщённые координаты</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.setRobotToCandle">
+<code class="descname">setRobotToCandle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.setRobotToCandle" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Поставить робота в свечку</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.warmUpLink">
+<code class="descname">warmUpLink</code><span class="sig-paren">(</span><em>n</em>, <em>t</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.warmUpLink" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>разогрев</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><ul class="first last simple">
+<li><strong>n</strong> – номер звена</li>
+<li><strong>t</strong> – время разогрева</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaWrapper.kukaWrapper.KukaWrapper.warn">
+<code class="descname">warn</code><span class="sig-paren">(</span><em>message</em>, <em>caption='\xd0\x90\xd0\xb5!'</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaWrapper.kukaWrapper.KukaWrapper.warn" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>Показать сообщение</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><ul class="first last simple">
+<li><strong>message</strong> – Текст сообщения</li>
+<li><strong>caption</strong> – Заголовок сообщения</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-scripts.kukaWrapper">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-scripts.kukaWrapper" title="Ссылка на этот заголовок">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Быстрый поиск</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Искать" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, aoklyunin.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/scripts.kukaWrapper.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

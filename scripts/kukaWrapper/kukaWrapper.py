@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+    Родительский модуль для управления кукой
+"""
+
 import math
 import random
 import datetime
@@ -13,8 +17,13 @@ import time
 
 
 class KukaWrapper:
-    # масимальная скорость руки
-    maxArmVelocity = math.radians(90)
+    """
+    Родительский класс для управления кукой
+    """
+
+    # Максимальная скорость звеньев робота
+    maxJointVelocity = math.radians(90)
+
     # диапазон допустимых значений джоинтов
     jointsRange = [
         [0.011, 5.840],
@@ -30,6 +39,8 @@ class KukaWrapper:
     TARGET_TYPE_MANY_JOINTS = 0
     TARGET_TYPE_ONE_JOINT = 1
     TARGET_TYPE_NO_TARGET = -1
+
+    candlePos = [2.01, 1.09, -2.44, 1.74, 2.96]
 
     targetJPoses = [0, 0, 0, 0, 0]
     targetJPos = 0
@@ -65,23 +76,32 @@ class KukaWrapper:
 
     reachedAction = False
 
-    # Показать предупреждение
     def warn(self, message, caption='Ае!'):
+        """
+            Показать сообщение
+        :param message: Текст сообщения
+        :param caption: Заголовок сообщения
+        """
         dlg = wx.MessageDialog(None, message, caption, wx.OK | wx.ICON_WARNING)
         dlg.ShowModal()
         dlg.Destroy()
 
-    # В свечу с режимом ожидания
     def inCandleWithWaiting(self):
-        joints = [2.01, 1.09, -2.44, 1.74, 2.96]
-        self.setJointPositions(joints)
+        """
+            В свечу с режимом ожидания
+        """
+        self.setJointPositions(self.candlePos)
         self.targetType == self.TARGET_TYPE_MANY_JOINTS
-        self.targetJPoses = joints
+        self.targetJPoses = self.candlePos
         while self.targetType == self.TARGET_TYPE_MANY_JOINTS:
             rospy.sleep(0.1)
 
-    # проверка, что положение допустимо pos - координаты в декартовом пространстве
     def checkPositionXYZEnable(self, pos):
+        """
+            проверка, что положение допустимо
+        :param pos: координаты в декартовом пространстве
+        :return: True/False
+        """
         x = pos[0]
         y = pos[1]
         z = pos[2]
@@ -92,24 +112,36 @@ class KukaWrapper:
 
         return True
 
-    # проверка, что положение допустимо joints - обобщённые координаты
+    #
     def checkPositionJEnabled(self, joints):
+        """
+             проверка, что положение допустимо
+        :param joints: обобщённые координаты
+        :return: True/False
+        """
         xyz = self.getEndEffectorPosByJ(joints)
 
         # print(xyz)
         return self.checkPositionXYZEnable(xyz)
 
-    # разогрев
+    #
     def warmUpLink(self, n, t):
+        """
+            разогрев
+        :param n: номер звена
+        :param t: время разогрева
+        """
         startTime = time.time()
         while (time.time() - startTime < t * 60):
             pos = random.uniform(self.jointsRange[n - 1][0], self.jointsRange[n - 1][1])
             self.setJointPosition(n, pos)
             rospy.sleep(0.5)
-        pass
 
-    # отправить в позицию и ждать, пока робот в неё не придёт
     def setPosAndWait(self, joints):
+        """
+             отправить в позицию и ждать, пока робот в неё не придёт
+        :param joints: обобщённые координаты
+        """
         if self.checkPositionJEnabled(joints):
             self.setJointPositions(joints)
             self.targetType == self.TARGET_TYPE_MANY_JOINTS
@@ -123,14 +155,22 @@ class KukaWrapper:
             return True
         return False
 
-    # проверить, что текущее положение допустимо(это нужно для проверки рассчётов допустимой зоны)
     def checkCurPositionEnabled(self):
+        """
+             проверить, что текущее положение допустимо(это нужно для проверки рассчётов допустимой зоны)
+        :return: True/False
+        """
         xyz = self.getEndEffectorPosByJ(self.jointState.position)
         # print(xyz)
         return self.checkPositionXYZEnable(xyz)
 
-    # отправить робота в n рандомных положений с задержкой tp
     def randomPoints(self, n, tp):
+        """
+            отправить робота в рандомные положения
+        :param n: кол-во положений
+        :param tp: пауза в секндах между командами
+        :return:
+        """
         for i in range(n):
             print(i)
             rospy.sleep(tp)
@@ -156,8 +196,12 @@ class KukaWrapper:
 
         self.warn("Робот отработал все точки")
 
-    # по положению получаем матрицу перехода из энд-эффектора в асолютную систему координат
     def getDH(self, position):
+        """
+            по положению получаем матрицу перехода из энд-эффектора в асолютную систему координат
+        :param position: массив из пяти элементов с обобщёнными координатами робота
+        :return: Матрица преобразования 4х4
+        """
         DH1 = getDHMatrix(math.pi / 2, self.L[0], self.L[1], position[0] + self.jointOffsets[0])
         DH2 = getDHMatrix(0, self.L[2], 0, position[1] + self.jointOffsets[1] + math.pi / 2)
         DH3 = getDHMatrix(0, self.L[3], 0, position[2] + self.jointOffsets[2])
@@ -165,38 +209,58 @@ class KukaWrapper:
         DH5 = getDHMatrix(0, 0, self.L[4], position[4] + self.jointOffsets[4])
         return DH1 * DH2 * DH3 * DH4 * DH5
 
-    # матрица преобразования
     def getTF(self):
+        """
+            Текущая матрица преобразования робота
+        :return: Матрица преобразования 4х4
+        """
         return self.getDH(self.jointState.position)
 
-    # получить положение энд-эффектора
     def getEndEffectorPos(self):
+        """
+            получить положение энд-эффектора
+        :return: Массив декартовых координат [x,y,z]
+        """
         tf = self.getTF()
         return [tf.item(0, 3), tf.item(1, 3), tf.item(2, 3)]
 
-    # получить положение энд-эффектора по положению
     def getEndEffectorPosByJ(self, joints):
+        """
+            Возвращает положение энд-эффектора по обобщённым координтатам
+        :param joints:  массив из пяти элементов с обобщёнными координатами робота
+        :return: Массив декартовых координат [x,y,z]
+        """
         tf = self.getDH(joints)
         return [tf.item(0, 3), tf.item(1, 3), tf.item(2, 3)]
 
-    # проверить, что список состоит из нулей
     def checkIfListIsZero(self, lst):
+        """
+            проверить, что список состоит из нулей
+        :param lst: массив(список)
+        :return: True/False
+        """
         flg = True
         for i in range(len(lst)):
             if lst[i] != 0:
                 flg = False
         return flg
 
-    # посчитать избыточные моменты
     def calculateOverG(self):
+        """
+             посчитать избыточные моменты
+        :return: массив(список) избыточных моментов на каждом звене
+        """
         G = getG(self.jointState.position)
         for i in range(5):
             self.overG[i] = self.jointState.effort[i] - G[i]
             if abs(self.overG[i]) < self.G_ERROR_RANGE[i]:
                 self.overG[i] = 0
 
-    # обработчик пришедших значенийitem
     def jointStateCallback(self, data):
+        """
+            обработчик пришедших показаний датчика из роса
+        :param data: Структура роса с показаниями датчика
+        """
         # созраняем пришедшее значение
         self.jointState = data
         self.calculateOverG()
@@ -222,8 +286,10 @@ class KukaWrapper:
         if sum < 0.1 and self.targetType != self.TARGET_TYPE_NO_TARGET:
             self.targetType = self.TARGET_TYPE_NO_TARGET
 
-    # конструктор
     def __init__(self):
+        """
+            конструктор
+        """
         # переменные для публикации в топики
         self.positionArmPub = rospy.Publisher("/arm_1/arm_controller/position_command",
                                               brics_actuator.msg.JointPositions, queue_size=1)
@@ -248,8 +314,12 @@ class KukaWrapper:
         rospy.sleep(1)
         rospy.loginfo("Kuka created")
 
-    # получаем по типу топика размерность
     def getUnitValue(self, tp):
+        """
+            получаем по типу топика размерность
+        :param tp: Топик
+        :return: размерность измеряемой величины
+        """
         if tp == self.TYPE_JOINT_POSITIONS:  # положение джоинтов
             return "rad"
         elif tp == self.TYPE_JOINT_VELOCITIES:  # скорость джоинтов
@@ -265,8 +335,14 @@ class KukaWrapper:
         else:
             return None
 
-    # по номеру джоинта, значению и типу генерируем сообщение
     def generateJoinVal(self, joint_num, val, tp):
+        """
+            генерируем сообщение по одному звену для роса
+        :param joint_num: номер звена
+        :param val: значение
+        :param tp: единица измерения
+        :return: сообщение по одному звену
+        """
         # создаём сообщение джоинта
         jv = brics_actuator.msg.JointValue()
         # получаем текущее время
@@ -279,8 +355,12 @@ class KukaWrapper:
         jv.value = val
         return jv
 
-    # задать скорость каретке x, y - линейные перемещений, z - поворот
     def setCarrigeVel(self, x, y, z):
+        """
+            задать скорость каретке
+        :param x, y: линейные перемещения
+        :param z:поворот
+        """
         # создаём сообщение
         msg = geometry_msgs.msg.Twist()
         # заполняем его данными
@@ -292,8 +372,12 @@ class KukaWrapper:
         # выполняем задержку (ебаный рос)
         rospy.sleep(1)
 
-    # управляем положением гриппера в миллиметрах, положение левого и правого пальцев
     def setGripperPositions(self, leftG, rightG):
+        """
+            управляет положением гриппера в миллиметрах
+        :param leftG:  положение левого пальца
+        :param rightG: положение правого пальцев
+        """
         # формируем сообщение положения джоинтов
         msg = brics_actuator.msg.JointPositions()
         # положения джоинтов - это список
@@ -323,8 +407,12 @@ class KukaWrapper:
         # делаем задержку
         rospy.sleep(1)
 
-    # управляем скоростью гриппера - тоже самое, что и setGripperPositions
     def setGripperVelocities(self, leftG, rightG):
+        """
+            управляет скоростью гриппера в мм/с
+        :param leftG:  скорость левого пальца
+        :param rightG: скорость правого пальцев
+        """
         msg = brics_actuator.msg.JointVelocities()
         msg.velocities = []
         jv = brics_actuator.msg.JointValue()
@@ -344,8 +432,12 @@ class KukaWrapper:
         self.velocityGripperPub.publish(msg)
         rospy.sleep(1)
 
-    # управляем силой гриппера - тоже самое, что и setGripperPositions
     def setGripperTorques(self, leftG, rightG):
+        """
+            управляет силой гриппера в Н
+        :param leftG:  сила левого пальца
+        :param rightG: сила правого пальцев
+        """
         msg = brics_actuator.msg.JointTorques()
         msg.torques = []
         jv = brics_actuator.msg.JointValue()
@@ -365,13 +457,17 @@ class KukaWrapper:
         self.forceGripperPub.publish(msg)
         rospy.sleep(1)
 
-    # Поставить робота в свечку
     def setRobotToCandle(self):
-        joints = [2.01, 1.09, -2.44, 1.74, 2.96]
-        self.setJointPositions(joints)
+        """
+            Поставить робота в свечку
+        """
+        self.setJointPositions(self.candlePos)
 
-    # задаём положения всех джоинтов
     def setJointPositions(self, joints):
+        """
+            задаём положения джоинтов в радианах
+        :param joints: массив из пяти элементов с желаемыми положениями
+        """
         msg = brics_actuator.msg.JointPositions()
         msg.positions = []
         # в цикле создаём объекты для сообщения, подробнее смотри setGripperPositions
@@ -389,8 +485,12 @@ class KukaWrapper:
 
         rospy.sleep(1)
 
-    # тоже самое, что и setJointPositions, но управляем только одним джоинтом
     def setJointPosition(self, joint_num, value):
+        """
+             задаёт положение джоинта в радианах
+        :param joint_num: номер джоинта
+        :param value: угол поворота
+        """
         # проверяем, что джоинт подходит
         if not joint_num in range(1, 5):
             rospy.logerror("Звено с номером " + str(joint_num) + " не определено")
@@ -402,8 +502,11 @@ class KukaWrapper:
 
         rospy.sleep(1)
 
-    # задаём моменты всех джоинтов подробнее смотри setJointPositions
     def setJointTorques(self, joints):
+        """
+            задаёт моменты джоинтов в Н*м
+        :param joints: массив из пяти элементов с желаемыми моментами
+        """
         msg = brics_actuator.msg.JointTorques()
         msg.torques = []
         for i in range(5):
@@ -412,23 +515,34 @@ class KukaWrapper:
         self.torqueArmPub.publish(msg)
         rospy.sleep(1)
 
-    # задаём момент конкретному джоинту подробнее смотри setJointPosition
     def setJointTorque(self, joint_num, value):
+        """
+             задаёт момент джоинта в Н*м
+        :param joint_num: номер джоинта
+        :param value: желаемый момент
+        """
         msg = brics_actuator.msg.JointTorques()
         msg.torques = [self.generateJoinVal(joint_num, value, self.TYPE_JOINT_TORQUES)]
         self.torqueArmPub.publish(msg)
         rospy.sleep(1)
 
-    # задаём скорости всех джоинтов подробнее смотри setJointPositions
     def setJointVelocity(self, joint_num, value):
+        """
+            задаёт скорости джоинтов в рад/с
+        :param joints: массив из пяти элементов с желаемыми скорости
+        """
         self.task[joint_num - 1] = value
         msg = brics_actuator.msg.JointVelocities()
         msg.velocities = [self.generateJoinVal(joint_num, value, self.TYPE_JOINT_VELOCITIES)]
         self.velocityArmPub.publish(msg)
         rospy.sleep(0.1)
 
-    # задаём скорость конкретному джоинту подробнее смотри setJointPosition
     def setJointVelocities(self, joints):
+        """
+             задаёт скорость джоинта в рад/с
+        :param joint_num: номер джоинта
+        :param value: желаемая скорость
+        """
         msg = brics_actuator.msg.JointVelocities()
         msg.velocities = []
         for i in range(5):

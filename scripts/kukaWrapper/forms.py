@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+    Родительский модуль для описания окна приложения
+"""
 
 from abc import ABCMeta, abstractmethod, abstractproperty
 
@@ -11,6 +14,10 @@ from scripts.kukaWrapper.kukaWrapper import KukaWrapper
 
 
 class Frame(wx.Frame):
+    """
+        Класс для описания окна приложения
+    """
+
     @abstractmethod
     def initExpItems(self):
         """Инициализация элементов управления экспериментами"""
@@ -23,18 +30,24 @@ class Frame(wx.Frame):
     def ExpTimer(self):
         """Таймер для экспериментов. Срабатывает раз в пол-секунды"""
 
-    # в свечку
     def OnCandle(self, event):
+        """
+        отправить робота в свечку
+        """
         print (self.kuka.setRobotToCandle())
 
-    # закрытие формы
     def onClose(self, event):
+        """
+            закрытие формы
+        """
         # останавливаем таймер
         self.timer.Stop()
         self.Close()
 
-    # записать полученную от куки дату в таблицу
     def setDataToGrid(self, data):
+        """
+        записать полученную от куки дату в таблицу
+        """
         G = getG(data.position)
         for i in range(len(data.position)):
             # if i < 5:
@@ -48,8 +61,11 @@ class Frame(wx.Frame):
                 self.myGrid.SetCellValue(i, 3, ("%.2f" % G[i]))
                 self.myGrid.SetCellValue(i, 4, ("%.2f" % self.kuka.overG[i]))
 
-    # получить углы из полей ввобда джоинтов
     def getJoinfFromText(self):
+        """
+            получить углы из полей ввобда джоинтов
+        :return:  массив обощённых координат робота
+        """
         return [
             float(self.j1PosTex.GetValue()),
             float(self.j2PosTex.GetValue()),
@@ -58,43 +74,47 @@ class Frame(wx.Frame):
             float(self.j5PosTex.GetValue()),
         ]
 
-    # управление джоинтами по положению
     def OnSendJPos(self, event):
+        """
+            управление положением по джоинтам
+        """
         self.kuka.setJointPositions(self.getJoinfFromText())
-        pass
 
-    # управление джоинтами по скоростям
     def OnSendJVel(self, event):
+        """
+            управление скоростями по джоинтам
+        """
         self.kuka.setJointVelocities(self.getJoinfFromText())
-        pass
 
-    # управление джоинтами по моментам
     def OnSendJTor(self, event):
+        """
+        управление моментами по джоинтам
+        """
         self.kuka.setJointTorques(self.getJoinfFromText())
-        pass
 
-    # управление гриппером по положению
     def OnSendGPos(self, event):
+        """
+        управление гриппером по положению
+        """
         self.kuka.setGripperPositions(float(self.glPosTex.GetValue()), float(self.grPosTex.GetValue()))
-        pass
 
-    # управление гриппером по положению
     def OnSendGVel(self, event):
+        """
+            управление гриппером по положению
+                """
         self.kuka.setGripperVelocities(float(self.glPosTex.GetValue()), float(self.grPosTex.GetValue()))
-        pass
 
-    # управление гриппером по скоростям
     def OnSendGTor(self, event):
-        self.kuka.setGripperTorques(float(self.glPosTex.GetValue()), float(self.grPosTex.GetValue()))
-        pass
+        """
+            управление гриппером по скоростям
 
-    # управление джоинтами по моментам
-    def OnSendCVel(self, event):
-        self.kuka.setCarrigeVel(float(self.cxPosTex.GetValue()), float(self.cyPosTex.GetValue()),
-                                float(self.czPosTex.GetValue()))
-        pass
+                """
+        self.kuka.setGripperTorques(float(self.glPosTex.GetValue()), float(self.grPosTex.GetValue()))
 
     def setDHChords(self):
+        """
+            Задать координаты в декартовом пространстве
+                """
         self.posXTex.Clear()
         self.posYTex.Clear()
         self.posZTex.Clear()
@@ -103,8 +123,10 @@ class Frame(wx.Frame):
         self.posYTex.AppendText(str(round(ps[1])))
         self.posZTex.AppendText(str(round(ps[2])))
 
-    # события по таймеру
     def OnTimer(self, event):
+        """
+            события по таймеру 2Гц
+                """
         self.setDataToGrid(self.kuka.jointState)
         self.setDHChords()
         if self.kuka.checkCurPositionEnabled():
@@ -113,8 +135,10 @@ class Frame(wx.Frame):
             self.posEnabledTex.SetLabel("Disabled")
         self.ExpTimer()
 
-    # Обновить положения робота в полях ввода
     def OnUpdateJPos(self, event):
+        """
+         Обновить положения робота в полях ввода
+                """
         ps = self.kuka.jointState.position
         self.j1PosTex.Clear()
         self.j2PosTex.Clear()
@@ -126,10 +150,11 @@ class Frame(wx.Frame):
         self.j3PosTex.AppendText(str(round(ps[2], 2)))
         self.j4PosTex.AppendText(str(round(ps[3], 2)))
         self.j5PosTex.AppendText(str(round(ps[4], 2)))
-        pass
 
-    # обнулить положения робота
     def OnZeroJPos(self, event):
+        """
+            обнулить положения робота
+                """
         self.j1PosTex.Clear()
         self.j2PosTex.Clear()
         self.j3PosTex.Clear()
@@ -140,16 +165,17 @@ class Frame(wx.Frame):
         self.j3PosTex.AppendText("0")
         self.j4PosTex.AppendText("0")
         self.j5PosTex.AppendText("0")
-        pass
 
-    # остановить движение робота
     def OnStopKuka(self, event):
+        """
+            остановить движение робота
+                """
         self.kuka.setJointVelocities([0, 0, 0, 0, 0])
-        pass
 
-
-    # конструктор
     def __init__(self, parent=None, id=-1, title='', pos=(0, 0), size=(690, 900)):
+        """
+            конструктор
+        """
         # создаём фрейм
         wx.Frame.__init__(self, parent, id, title, pos, size)
 
@@ -170,8 +196,10 @@ class Frame(wx.Frame):
         # указываем функцию, которая будет вызываться по таймеру
         self.Bind(wx.EVT_TIMER, self.OnTimer, self.timer)
 
-    # инициализируем элементы управления
     def initControlItems(self):
+        """
+            инициализирует элементы управления
+        """
         # Управление джоинтами
         wx.StaticText(self.panel, -1, "Джоинты", (30, 140))
         # создаём поля ввода для джоинтов
@@ -225,8 +253,10 @@ class Frame(wx.Frame):
         # добавляем элементы из эксперимента
         self.initExpItems()
 
-    # инициализация таблицы
     def initGrid(self):
+        """
+            инициализация таблицу
+        """
         # создаём таблицу
         self.myGrid = gridlib.Grid(self.panel)
         # кол-во строк и столбцов

@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+
 """
-    Здесь создаётся графическое окно
+    Модуль для создания окна
 """
+
 from scripts.kukaController import KukaController
 from scripts.kukaWrapper.forms import Frame
 import wx
@@ -11,17 +13,23 @@ import wx
 
 class KukaFrame(Frame):
     """
-        Инициализация элементов панели self.expPanel
-        Ширина 690, Высота 500
-
+        Класс графического окна
     """
 
     def __init__(self, parent=None, id=-1, title=''):
+        """
+                Инициализация элементов панели self.expPanel
+                Ширина 690, Высота 500
+
+        """
         Frame.__init__(self, parent, id, title)
         # создаём объект для взаимодействия с роботом
         self.kuka = KukaController()
 
     def initExpItems(self):
+        """
+            Инициализация элементов окна
+        """
         # трапеции
         self.frictionBtn = wx.Button(self.expPanel, label="Friction", pos=(30, 10), size=(120, 30))
         self.Bind(wx.EVT_BUTTON, self.OnFriction, self.frictionBtn)
@@ -59,41 +67,56 @@ class KukaFrame(Frame):
         self.ForceControlBtn = wx.Button(self.expPanel, label="ForceControl", pos=(470, 120), size=(140, 30))
         self.Bind(wx.EVT_BUTTON, self.OnForceControl, self.ForceControlBtn)
 
-    # таймер, срабатывает два раза в секунду
     def ExpTimer(self):
-        # всё, что сюда напишешь будет выполняться каждые 500 мсек
+        """
+            Таймер, срабатывает два раза в секунду. Всё, что сюда напишешь будет выполняться каждые 500 мсек
+        """
         pass
 
-    # тестовая функция(можешь написать, что угодно, оно будет срабатывать каждый раз, когда ты жмёшь кнопку "Тест")
     def OnTest(self, event):
+        """
+            тестовая функция(можешь написать, что угодно, оно будет срабатывать каждый раз, когда ты жмёшь кнопку "Тест")
+        """
         print ("Test Button clicked")
 
-    # Эксперимент по трению с одним звеном
     def OnFriction(self, event):
+        """
+            Эксперимент по трению с одним звеном
+        """
         print (self.kuka.makeTrapezeSimpleCiclic(
             int(self.frictionJNumTex.GetValue()),
             float(self.frictionAngleEndTex.GetValue()),
             float(self.frictionMaxWTex.GetValue())
         ))
 
-    # эксперимент по трению со всеми звеньями
     def OnFullFriction(self, event):
+        """
+            эксперимент по трению со всеми звеньями
+        """
         self.kuka.fullFriction()
 
-    # поиск нулевого момента
     def OnFindZeroMoment(self, event):
+        """
+            поиск нулевого момента
+        """
         self.kuka.zeroMomentInJoint(int(self.zeroMomentTex.GetValue()))
         pass
 
-    # разогрев звена
     def OnWarmUp(self, event):
+        """
+            разогрев звена
+        """
         self.kuka.warmUpLink(int(self.warmUpNumTex.GetValue()), float(self.warmUpTimeTex.GetValue()))
         pass
 
-    # эксперимент с гравитацией
     def OnGravityFind(self, event):
+        """
+            эксперимент с гравитацией
+        """
         self.kuka.gravitationFind()
 
-    # режим Force-Control
     def OnForceControl(self, event):
+        """
+            режим Force-Control
+        """
         self.kuka.forceControl()

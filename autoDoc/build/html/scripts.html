@@ -1,0 +1,273 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>scripts package &#8212; Документация TraTest 1</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Алфавитный указатель" href="genindex.html" />
+    <link rel="search" title="Поиск" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="scripts-package">
+<h1>scripts package<a class="headerlink" href="#scripts-package" title="Ссылка на этот заголовок">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Ссылка на этот заголовок">¶</a></h2>
+</div>
+<div class="section" id="module-scripts.forms">
+<span id="scripts-forms-module"></span><h2>scripts.forms module<a class="headerlink" href="#module-scripts.forms" title="Ссылка на этот заголовок">¶</a></h2>
+<p>Модуль для создания окна</p>
+<dl class="class">
+<dt id="scripts.forms.KukaFrame">
+<em class="property">class </em><code class="descclassname">scripts.forms.</code><code class="descname">KukaFrame</code><span class="sig-paren">(</span><em>parent=None</em>, <em>id=-1</em>, <em>title=''</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.forms.KukaFrame" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>Базовые классы: <a class="reference internal" href="scripts.kukaWrapper.html#scripts.kukaWrapper.forms.Frame" title="scripts.kukaWrapper.forms.Frame"><code class="xref py py-class docutils literal"><span class="pre">scripts.kukaWrapper.forms.Frame</span></code></a></div></blockquote>
+<p>Класс графического окна</p>
+<dl class="method">
+<dt id="scripts.forms.KukaFrame.ExpTimer">
+<code class="descname">ExpTimer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#scripts.forms.KukaFrame.ExpTimer" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Таймер, срабатывает два раза в секунду. Всё, что сюда напишешь будет выполняться каждые 500 мсек</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.forms.KukaFrame.OnFindZeroMoment">
+<code class="descname">OnFindZeroMoment</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.forms.KukaFrame.OnFindZeroMoment" title="Ссылка на это определение">¶</a></dt>
+<dd><p>поиск нулевого момента</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.forms.KukaFrame.OnForceControl">
+<code class="descname">OnForceControl</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.forms.KukaFrame.OnForceControl" title="Ссылка на это определение">¶</a></dt>
+<dd><p>режим Force-Control</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.forms.KukaFrame.OnFriction">
+<code class="descname">OnFriction</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.forms.KukaFrame.OnFriction" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Эксперимент по трению с одним звеном</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.forms.KukaFrame.OnFullFriction">
+<code class="descname">OnFullFriction</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.forms.KukaFrame.OnFullFriction" title="Ссылка на это определение">¶</a></dt>
+<dd><p>эксперимент по трению со всеми звеньями</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.forms.KukaFrame.OnGravityFind">
+<code class="descname">OnGravityFind</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.forms.KukaFrame.OnGravityFind" title="Ссылка на это определение">¶</a></dt>
+<dd><p>эксперимент с гравитацией</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.forms.KukaFrame.OnTest">
+<code class="descname">OnTest</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.forms.KukaFrame.OnTest" title="Ссылка на это определение">¶</a></dt>
+<dd><p>тестовая функция(можешь написать, что угодно, оно будет срабатывать каждый раз, когда ты жмёшь кнопку «Тест»)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.forms.KukaFrame.OnWarmUp">
+<code class="descname">OnWarmUp</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.forms.KukaFrame.OnWarmUp" title="Ссылка на это определение">¶</a></dt>
+<dd><p>разогрев звена</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.forms.KukaFrame.initExpItems">
+<code class="descname">initExpItems</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#scripts.forms.KukaFrame.initExpItems" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Инициализация элементов окна</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-scripts.kukaController">
+<span id="scripts-kukacontroller-module"></span><h2>scripts.kukaController module<a class="headerlink" href="#module-scripts.kukaController" title="Ссылка на этот заголовок">¶</a></h2>
+<p>Модуль управление Кукой</p>
+<dl class="class">
+<dt id="scripts.kukaController.KukaController">
+<em class="property">class </em><code class="descclassname">scripts.kukaController.</code><code class="descname">KukaController</code><a class="headerlink" href="#scripts.kukaController.KukaController" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>Базовые классы: <a class="reference internal" href="scripts.kukaWrapper.html#scripts.kukaWrapper.kukaWrapper.KukaWrapper" title="scripts.kukaWrapper.kukaWrapper.KukaWrapper"><code class="xref py py-class docutils literal"><span class="pre">scripts.kukaWrapper.kukaWrapper.KukaWrapper</span></code></a></div></blockquote>
+<p>Класс управления кукой</p>
+<dl class="method">
+<dt id="scripts.kukaController.KukaController.forceControl">
+<code class="descname">forceControl</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaController.KukaController.forceControl" title="Ссылка на это определение">¶</a></dt>
+<dd><p>режим Force-Control</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaController.KukaController.fullFriction">
+<code class="descname">fullFriction</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaController.KukaController.fullFriction" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Эксперимент по трениям по всем джоинтам</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaController.KukaController.gravitationFind">
+<code class="descname">gravitationFind</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaController.KukaController.gravitationFind" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Эксперимент для гравитации</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaController.KukaController.makeSimpleTrapeze">
+<code class="descname">makeSimpleTrapeze</code><span class="sig-paren">(</span><em>jointNum</em>, <em>arange</em>, <em>maxW</em>, <em>repeatCnt</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaController.KukaController.makeSimpleTrapeze" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>Один прогон трапеции</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><ul class="first last simple">
+<li><strong>jointNum</strong> – номер джоинта</li>
+<li><strong>arange</strong> – диапазон положений</li>
+<li><strong>maxW</strong> – максимальная скорость</li>
+<li><strong>repeatCnt</strong> – кол-во повторений</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaController.KukaController.makeTrapezeSimpleCiclic">
+<code class="descname">makeTrapezeSimpleCiclic</code><span class="sig-paren">(</span><em>jointNum</em>, <em>arange</em>, <em>maxW</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaController.KukaController.makeTrapezeSimpleCiclic" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>Эксперимент с трапециями</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><ul class="first last simple">
+<li><strong>jointNum</strong> – Номер звена</li>
+<li><strong>arange</strong> – Диапазон</li>
+<li><strong>maxW</strong> – максимальная скорость</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaController.KukaController.zeroMomentA">
+<code class="descname">zeroMomentA</code><span class="sig-paren">(</span><em>j</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaController.KukaController.zeroMomentA" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>поиск нулевого момента, режим А</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><strong>j</strong> – номер звена</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaController.KukaController.zeroMomentB">
+<code class="descname">zeroMomentB</code><span class="sig-paren">(</span><em>j</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaController.KukaController.zeroMomentB" title="Ссылка на это определение">¶</a></dt>
+<dd><blockquote>
+<div>поиск нулевого момента, режим B</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Параметры:</th><td class="field-body"><strong>j</strong> – номер звена</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.kukaController.KukaController.zeroMomentInJoint">
+<code class="descname">zeroMomentInJoint</code><span class="sig-paren">(</span><em>j</em><span class="sig-paren">)</span><a class="headerlink" href="#scripts.kukaController.KukaController.zeroMomentInJoint" title="Ссылка на это определение">¶</a></dt>
+<dd><p>эксперимент по поиску нулевого момента
+:param j: номер звена
+:return:</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="scripts-mainapp-module">
+<h2>scripts.mainApp module<a class="headerlink" href="#scripts-mainapp-module" title="Ссылка на этот заголовок">¶</a></h2>
+</div>
+<div class="section" id="module-scripts">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-scripts" title="Ссылка на этот заголовок">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Быстрый поиск</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Искать" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, aoklyunin.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/scripts.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -2,17 +2,24 @@
 # -*- coding: utf-8 -*-
 
 """
-    Это управление Кукой
+    Модуль управление Кукой
 """
 import random
 import numpy as np
 import rospy
+
 from scripts.kukaWrapper.kukaWrapper import KukaWrapper
 
 
 class KukaController(KukaWrapper):
-    # режим Force-Control
+    """
+       Класс управления кукой
+    """
+
     def forceControl(self):
+        """
+            режим Force-Control
+        """
         targetVel = [0] * 7
         while (True):
             for i in range(5):
@@ -24,8 +31,10 @@ class KukaController(KukaWrapper):
             self.setJointVelocities(targetVel)
             rospy.sleep(0.1)
 
-    # експеримент по трениям по всем джоинтам
     def fullFriction(self):
+        """
+            Эксперимент по трениям по всем джоинтам
+        """
         data = [
             [2, 3],
             [1, 1.5],
@@ -37,8 +46,13 @@ class KukaController(KukaWrapper):
             print("exp №" + str(i))
             self.makeTrapezeSimpleCiclic(i, data[i][0], data[i][1])
 
-    # Эксперимент с трапециями
     def makeTrapezeSimpleCiclic(self, jointNum, arange, maxW):
+        """
+             Эксперимент с трапециями
+        :param jointNum: Номер звена
+        :param arange: Диапазон
+        :param maxW: максимальная скорость
+        """
         print("big")
         for i in range(int(maxW) * 5 - 5):
             self.inCandleWithWaiting()
@@ -63,9 +77,15 @@ class KukaController(KukaWrapper):
             print(0.1 - float(i) / 100)
             self.makeSimpleTrapeze(jointNum, arange, 0.1 - float(i) / 100, 5)
 
-    # один прогон эксперимента по трениям
-    # с заданными: номером джоинта, диапазоном положений, максимальной скоростью, кол-вом повторений
+
     def makeSimpleTrapeze(self, jointNum, arange, maxW, repeatCnt):
+        """
+            Один прогон трапеции
+        :param jointNum: номер джоинта
+        :param arange: диапазон положений
+        :param maxW:  максимальная скорость
+        :param repeatCnt:  кол-во повторений
+        """
         angleStart = self.jointState.position[jointNum - 1]
         curPos = angleStart
 
@@ -103,8 +123,11 @@ class KukaController(KukaWrapper):
 
         rospy.sleep(0.5)
 
-    # поиск гравитации
+
     def gravitationFind(self):
+        """
+            Эксперимент для гравитации
+        """
         for y in range(int((self.jointsRange[1][0] - 0) * 5), int((self.jointsRange[1][1] - 0) * 5)):
             valJ2 = float(y) / 5
             for k in range(int((self.jointsRange[2][0] + 0) * 5), int((self.jointsRange[2][1] - 0) * 5)):
@@ -120,8 +143,12 @@ class KukaController(KukaWrapper):
                             #         val = float(i) / 10
                             #         print(val)
 
-    # поиск нулевого момента, режим А
+
     def zeroMomentA(self, j):
+        """
+            поиск нулевого момента, режим А
+        :param j: номер звена
+        """
         print("A")
         D = 0.3
         candlePosJ4 = 1.74
@@ -132,8 +159,12 @@ class KukaController(KukaWrapper):
             self.setJointPosition(j, targetPos)
             rospy.sleep(3)
 
-    # поиск нулевого момента, режим B
+
     def zeroMomentB(self, j):
+        """
+                    поиск нулевого момента, режим B
+                :param j: номер звена
+                """
         print("B")
         D = 0.3
         candlePosJ4 = 1.74
@@ -149,8 +180,12 @@ class KukaController(KukaWrapper):
             self.setJointPosition(j, targetPos)
             rospy.sleep(3)
 
-    # подогнать джоинт так, чтобы момент в нём был нулевым(работает коряво, впадлу пока допиливать)
     def zeroMomentInJoint(self, j):
+        """
+        эксперимент по поиску нулевого момента
+        :param j: номер звена
+        :return:
+        """
         for i in range(30):
             self.zeroMomentA(j)
             self.zeroMomentB(j)
