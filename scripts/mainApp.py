@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import rospy
 import wx
-from forms import Frame
+
+import rospy
+
+from scripts.forms import KukaFrame
+
 
 # класс приложения
 class App(wx.App):
@@ -13,7 +16,7 @@ class App(wx.App):
         # инициализируем ноду роса
         rospy.init_node(self.node_name)
         # создание окна
-        self.frame = Frame(None,-1,"Kuka Controller")
+        self.frame = KukaFrame(None,-1,"Kuka Controller")
         # отображение окна
         self.frame.Show(True)
         # указываем, что только что созданное окно - главное
