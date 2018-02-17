@@ -24,8 +24,8 @@ class KukaController(KukaWrapper):
         while (True):
             for i in range(5):
                 targetVel[i] = -self.overG[i] * self.G_K[i]
-                if abs(targetVel[i]) > self.MAX_V[i]:
-                    targetVel[i] = np.sign(targetVel[i]) * self.MAX_V[i]
+                if abs(targetVel[i]) > 0.1:
+                    targetVel[i] = np.sign(targetVel[i]) * 0.1
 
             print(targetVel)
             self.setJointVelocities(targetVel)
