@@ -105,9 +105,9 @@ class KukaWrapper:
         x = pos[0]
         y = pos[1]
         z = pos[2]
-        if z < 150:
+        if z < 200:
             return False
-        elif z < 220:
+        elif z < 300:
             return x ** 2 + y ** 2 > 350 ** 2
 
         return True

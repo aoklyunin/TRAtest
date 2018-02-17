@@ -143,6 +143,48 @@ class KukaController(KukaWrapper):
                             #         val = float(i) / 10
                             #         print(val)
 
+    def gravitationFindRand(self):
+        """
+            Эксперимент для гравитации по случайным точкам
+        """
+        cnt = 0
+        jointsRange = [
+            [0.011, 5.840],
+            [0.011, 2.617],
+            [-5.0, -0.02],
+            [0.03, 3.42],
+            [0.15, 5.641],
+        ]
+
+        while(cnt<50):
+            if self.setPosAndWait([random.uniform(self.jointsRange[0][0],self.jointsRange[0][1]),
+                                   random.uniform(self.jointsRange[1][0],self.jointsRange[1][1]),
+                                   random.uniform(self.jointsRange[2][0],self.jointsRange[2][1]),
+                                   random.uniform(self.jointsRange[3][0],self.jointsRange[3][1]),
+                                   random.uniform(self.jointsRange[4][0],self.jointsRange[4][1])]):
+                rospy.sleep(2.5)
+                cnt+=1
+
+    def gravitationFindQ(self):
+        Q = [
+            [0.6230, 0.2000, - 0.3276, 0.2350, 3.2646],
+            [2.1252, 2.2310, - 2.1152, 1.6990, 0.3876],
+            [1.8840, 1.7770, - 1.1896, 2.2242, 2.3580],
+            [1.1580, 0.9710, - 1.8840, 2.6750, 0.5950],
+            [2.4330, 2.0046, - 1.4616, 2.5430, 1.1750],
+            [2.8092, 1.7540, - 0.1866, 2.1420, 2.0996],
+            [2.2140, 2.2290, - 1.0156, 0.7946, 1.2190],
+            [5.3060, 2.2940, - 2.2600, 2.1400, 3.3730],
+            [0.5520, 0.3000, - 1.5156, 1.4160, 2.2110],
+            [2.2532, 0.7960, - 2.0546, 0.6040, 0.3116],
+            [1.0850, 2.0784, - 2.0096, 2.2032, 3.0980],
+            [5.5300, 1.1550, - 4.4470, 0.9050, 2.3940],
+        ]
+        for i in range(len(Q)):
+            print (i)
+            if self.setPosAndWait([Q[i][0],Q[i][1],Q[i][2],Q[i][3],Q[i][4]]):
+                rospy.sleep(4)
+
 
     def zeroMomentA(self, j):
         """
