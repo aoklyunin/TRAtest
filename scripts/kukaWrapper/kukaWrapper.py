@@ -309,6 +309,7 @@ class KukaWrapper:
         dt = datetime.datetime.now()
         date = dt.strftime("%d_%m_%Y_%I_%M%p")
         self.outLog = open('logs/' + date + '.csv', 'wb')
+
         self.startTime = time.time()
         # пауза необходима для правильной обработки пакетов
         rospy.sleep(1)

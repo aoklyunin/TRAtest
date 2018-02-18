@@ -113,7 +113,7 @@ class KukaFrame(Frame):
         """
             эксперимент с гравитацией
         """
-        self.kuka.gravitationFind()
+        self.kuka.gravitationFindR()
 
     def OnForceControl(self, event):
         """
