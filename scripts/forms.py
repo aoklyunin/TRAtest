@@ -63,14 +63,23 @@ class KukaFrame(Frame):
         self.gravityFindBtn = wx.Button(self.expPanel, label="Gravity Exp", pos=(310, 120), size=(140, 30))
         self.Bind(wx.EVT_BUTTON, self.OnGravityFind, self.gravityFindBtn)
 
+        # поиск гравитации
+        self.randomConfBtn = wx.Button(self.expPanel, label="Random Conf", pos=(310, 170), size=(140, 30))
+        self.Bind(wx.EVT_BUTTON, self.OnRandomConf, self.randomConfBtn)
+
         # Режим Force-контроля
         self.ForceControlBtn = wx.Button(self.expPanel, label="ForceControl", pos=(470, 120), size=(140, 30))
         self.Bind(wx.EVT_BUTTON, self.OnForceControl, self.ForceControlBtn)
+
+
+
 
     def ExpTimer(self):
         """
             Таймер, срабатывает два раза в секунду. Всё, что сюда напишешь будет выполняться каждые 500 мсек
         """
+
+
         pass
 
     def OnTest(self, event):
@@ -120,3 +129,9 @@ class KukaFrame(Frame):
             режим Force-Control
         """
         self.kuka.forceControl()
+
+    def OnRandomConf(self,event):
+        """
+            Перевести робота в случайную конфигурацию
+        """
+        self.kuka.moveToRandomConf(0.1)
