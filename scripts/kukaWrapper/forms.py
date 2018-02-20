@@ -48,7 +48,6 @@ class Frame(wx.Frame):
         """
         записать полученную от куки дату в таблицу
         """
-        G = getG(data.position)
         for i in range(len(data.position)):
             # if i < 5:
             #    s = self.kuka.jointOffsets[i]
@@ -58,7 +57,7 @@ class Frame(wx.Frame):
             self.myGrid.SetCellValue(i, 1, ("%.2f" % data.velocity[i]))
             self.myGrid.SetCellValue(i, 2, ("%.2f" % data.effort[i]))
             if i < 5:
-                self.myGrid.SetCellValue(i, 3, ("%.2f" % G[i]))
+                self.myGrid.SetCellValue(i, 3, ("%.2f" % self.kuka.G[i]))
                 self.myGrid.SetCellValue(i, 4, ("%.2f" % self.kuka.overG[i]))
 
     def getJoinfFromText(self):

@@ -70,7 +70,10 @@ class KukaWrapper:
     jointState = sensor_msgs.msg.JointState()
 
     overG = [0] * 5
-    G_ERROR_RANGE = [1.5, 1.5, 0.7, 0.5, 0.2]
+    G = [0] * 5
+    F = [0] * 3
+
+    G_ERROR_RANGE = [1, 1.8, 0.95, 0.65, 0.4]
     G_K = [0.2, 0.1, 0.07, 0.3, 0.5]
     MAX_V = [0.4, 0.4, 0.4, 0.4, 0.4]
 
@@ -250,11 +253,16 @@ class KukaWrapper:
              посчитать избыточные моменты
         :return: массив(список) избыточных моментов на каждом звене
         """
-        G = getG(self.jointState.position)
+
         for i in range(5):
-            self.overG[i] = self.jointState.effort[i] - G[i]
+            self.overG[i] = self.jointState.effort[i] - self.G[i]
             if abs(self.overG[i]) < self.G_ERROR_RANGE[i]:
                 self.overG[i] = 0
+
+    def getF(self):
+        self.F[0] = self.overG[0]
+        self.F[1] = self.overG[1]
+        self.F[2] = self.overG[2]
 
     def jointStateCallback(self, data):
         """
@@ -263,7 +271,9 @@ class KukaWrapper:
         """
         # созраняем пришедшее значение
         self.jointState = data
+        self.G = getG(data.position, data.effort)
         self.calculateOverG()
+        self.getF()
         sum = 0
         logStr = "%.4f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f\n" % (
             time.time() - self.startTime,
