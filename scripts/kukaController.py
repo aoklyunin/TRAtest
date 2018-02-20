@@ -6,6 +6,8 @@
 """
 import random
 import numpy as np
+
+import datetime
 import rospy
 
 from scripts.kukaWrapper.kukaWrapper import KukaWrapper
@@ -184,6 +186,30 @@ class KukaController(KukaWrapper):
             print (i)
             if self.setPosAndWait([Q[i][0],Q[i][1],Q[i][2],Q[i][3],Q[i][4]]):
                 rospy.sleep(4)
+
+
+    def gravitationFindR(self):
+        dt = datetime.datetime.now()
+        date = dt.strftime("%d_%m_%Y_%I_%M%p")
+        self.gLog = open('glogs/' + date + '.csv', 'wb')
+        cnt = 0
+        while cnt<50:
+            j = [0,0,0,0,0]
+            for i in range(5):
+                j[i] = random.uniform(self.jointsRange[i][0], self.jointsRange[i][1])
+
+            if self.setPosAndWait(j):
+                rospy.sleep(2.5)
+                data = self.jointState
+
+                logStr = "%.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f\n" % (
+                    data.position[0], data.position[1], data.position[2], data.position[3], data.position[4],
+                    data.effort[0], data.effort[1], data.effort[2], data.effort[3], data.effort[4],
+                )
+                self.gLog.write(logStr)
+                cnt+=1
+                print(cnt)
+
 
 
     def zeroMomentA(self, j):
