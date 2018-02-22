@@ -143,27 +143,7 @@ class KukaController(KukaWrapper):
                             #         val = float(i) / 10
                             #         print(val)
 
-    def gravitationFindRand(self):
-        """
-            Эксперимент для гравитации по случайным точкам
-        """
-        cnt = 0
-        jointsRange = [
-            [0.011, 5.840],
-            [0.011, 2.617],
-            [-5.0, -0.02],
-            [0.03, 3.42],
-            [0.15, 5.641],
-        ]
 
-        while (cnt < 50):
-            if self.setPosAndWait([random.uniform(self.jointsRange[0][0], self.jointsRange[0][1]),
-                                   random.uniform(self.jointsRange[1][0], self.jointsRange[1][1]),
-                                   random.uniform(self.jointsRange[2][0], self.jointsRange[2][1]),
-                                   random.uniform(self.jointsRange[3][0], self.jointsRange[3][1]),
-                                   random.uniform(self.jointsRange[4][0], self.jointsRange[4][1])]):
-                rospy.sleep(2.5)
-                cnt += 1
 
     def gravitationFindQ(self):
         Q = [
@@ -186,9 +166,30 @@ class KukaController(KukaWrapper):
                 rospy.sleep(4)
 
     def gravitationFindR(self):
-        for i in range(10):
-            self.moveToRandomConf(10)
+        for i in range(400):
+            self.moveToRandomConf3(10)
             print(i)
+
+
+    def warmUpRobot(self):
+        for i in range(100):
+            self.moveToRandomConf3(0)
+            print(i)
+
+
+    def moveToRandomConf3(self, sleepTime):
+        flgMoved = False
+        pos = self.jointState.position
+
+        while not flgMoved:
+            j = [0, 0, 0, 0, 0]
+            for i in range(5):
+                j[i] = random.uniform(self.jointsRange[i][0], self.jointsRange[i][1])
+            j[0] = pos[0]
+            j[4] = pos[4]
+            if self.setPosAndWait(j):
+                rospy.sleep(sleepTime)
+                flgMoved = True
 
     def moveToRandomConf(self, sleepTime):
         flgMoved = False
@@ -215,6 +216,7 @@ class KukaController(KukaWrapper):
             targetPos = candlePosJ4 + offset
             self.setJointPosition(j, targetPos)
             rospy.sleep(3)
+
 
     def zeroMomentB(self, j):
         """

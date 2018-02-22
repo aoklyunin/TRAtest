@@ -71,6 +71,9 @@ class KukaFrame(Frame):
         self.ForceControlBtn = wx.Button(self.expPanel, label="ForceControl", pos=(470, 120), size=(140, 30))
         self.Bind(wx.EVT_BUTTON, self.OnForceControl, self.ForceControlBtn)
 
+        # Режим Force-контроля
+        self.WarmUpBtn = wx.Button(self.expPanel, label="Warm up", pos=(470, 170), size=(140, 30))
+        self.Bind(wx.EVT_BUTTON, self.OnWarmUPRobot, self.WarmUpBtn)
 
 
 
@@ -123,6 +126,9 @@ class KukaFrame(Frame):
             эксперимент с гравитацией
         """
         self.kuka.gravitationFindR()
+
+    def OnWarmUPRobot(self,event):
+        self.kuka.warmUpRobot()
 
     def OnForceControl(self, event):
         """
