@@ -173,7 +173,7 @@ class KukaController(KukaWrapper):
 
     def warmUpRobot(self):
         for i in range(100):
-            self.moveToRandomConf3(0)
+            self.moveToRandomConf3(0.3)
             print(i)
 
 

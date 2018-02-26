@@ -1,0 +1,38 @@
+scripts package
+===============
+
+Submodules
+----------
+
+scripts\.forms module
+---------------------
+
+.. automodule:: ..\scripts.forms
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+scripts\.kukaController module
+------------------------------
+
+.. automodule:: ..\scripts.kukaController
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+scripts\.mainApp module
+-----------------------
+
+.. automodule:: ..\scripts.mainApp
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: ..\scripts
+    :members:
+    :undoc-members:
+    :show-inheritance:
