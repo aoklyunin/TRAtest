@@ -22,7 +22,7 @@ class App(wx.App):
         :return: True/False получилось ли создать приложение
         """
         # Задаём имя ноды
-        self.node_name = "fucking_kuka_node"
+        self.node_name = "simple_kuka_node"
         # инициализируем ноду роса
         rospy.init_node(self.node_name)
         # создание окна
