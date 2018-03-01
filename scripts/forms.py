@@ -79,6 +79,16 @@ class KukaFrame(Frame):
         self.WarmUpBtn = wx.Button(self.expPanel, label="Warm up", pos=(470, 170), size=(140, 30))
         self.Bind(wx.EVT_BUTTON, self.OnWarmUPRobot, self.WarmUpBtn)
 
+        '''
+        Исследование трения
+        '''
+        # Повторяемость в случайных позициях
+        self.frictionRandFindBtn = wx.Button(self.expPanel, label="Friction (rand)", pos=(30, 220), size=(140, 30))
+        self.Bind(wx.EVT_BUTTON, self.OnFrictionRandFind, self.frictionRandFindBtn)
+
+        # Повторяемость в крайних положениях
+        self.frictionMaxFindBtn = wx.Button(self.expPanel, label="Friction (max)", pos=(30, 270), size=(140, 30))
+        self.Bind(wx.EVT_BUTTON, self.OnFrictionMaxFind, self.frictionMaxFindBtn)
 
 
     def ExpTimer(self):
@@ -151,3 +161,9 @@ class KukaFrame(Frame):
             Перевести робота в случайную конфигурацию
         """
         self.kuka.moveToRandomConf(0.1)
+
+    def OnFrictionRandFind(self,event):
+        self.kuka.frictionRandomVarianceExp()
+
+    def OnFrictionMaxFind(self,event):
+        self.kuka.frictionMaxVarianceExp()

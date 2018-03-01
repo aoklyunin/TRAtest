@@ -191,21 +191,23 @@ class KukaController(KukaWrapper):
         for i in range(5):
             j = self.getRandomConf()
             for k in range(75):
-                self.moveToRandomConf(1)
+                self.moveToRandomConf(0.5)
                 self.moveToConf(j, 10)
                 print('position {}, itteration {}'.format(i, k))
 
     def frictionMaxVarianceExp(self):
         currentPos = self.jointState.position
-        positions[0] = [self.jointsRange[1][0], currentPos[2], currentPos[3], currentPos[4], currentPos[5]]
-        positions[1] = [self.jointsRange[1][1], currentPos[2], currentPos[3], currentPos[4], currentPos[5]]
+        positions = [
+            [currentPos[0], self.jointsRange[1][0], currentPos[2], currentPos[3], currentPos[4]],
+            [currentPos[0], self.jointsRange[1][1], currentPos[2], currentPos[3], currentPos[4]]
+        ]
 
         for i in range(len(positions)):
-            j = self.getRandomConf()
+            j = positions[i]
             for k in range(75):
                 self.moveToRandomConf(1)
                 self.moveToConf(j, 10)
-                print('position {}, itteration {}'.format(i, k))
+                print('position {}, itteration {}, pos {}'.format(i, k, j))
 
     def moveToConf(self, j, sleepTime):
         flgMoved = False
