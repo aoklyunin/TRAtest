@@ -165,17 +165,20 @@ class KukaController(KukaWrapper):
             if self.setPosAndWait([Q[i][0], Q[i][1], Q[i][2], Q[i][3], Q[i][4]]):
                 rospy.sleep(4)
 
-    def gravitationFindR(self):
+    def gravitationFindR3(self):
         for i in range(400):
             self.moveToRandomConf3(10)
             print(i)
 
+    def gravitationFindR(self):
+        for i in range(500):
+            self.moveToRandomConf(10)
+            print(i)
 
     def warmUpRobot(self):
         for i in range(100):
-            self.moveToRandomConf3(0.3)
+            self.moveToRandomConf(0.3)
             print(i)
-
 
     def moveToRandomConf3(self, sleepTime):
         flgMoved = False

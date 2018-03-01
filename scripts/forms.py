@@ -59,16 +59,20 @@ class KukaFrame(Frame):
         wx.StaticText(self.expPanel, -1, "Joint", (45, 130))
         wx.StaticText(self.expPanel, -1, "Time", (115, 130))
 
-        # поиск гравитации
-        self.gravityFindBtn = wx.Button(self.expPanel, label="Gravity Exp", pos=(310, 120), size=(140, 30))
+        # поиск гравитации для всех звеньев
+        self.gravityFindBtn = wx.Button(self.expPanel, label="Gravity Exp (all)", pos=(310, 120), size=(140, 30))
         self.Bind(wx.EVT_BUTTON, self.OnGravityFind, self.gravityFindBtn)
 
-        # поиск гравитации
+        # поиск гравитации для трех звеньев
+        self.gravityFindBtn3 = wx.Button(self.expPanel, label="Gravity Exp 3", pos=(470, 120), size=(140, 30))
+        self.Bind(wx.EVT_BUTTON, self.OnGravityFind3, self.gravityFindBtn3)
+
+        # Установка в случайную позицию
         self.randomConfBtn = wx.Button(self.expPanel, label="Random Conf", pos=(310, 170), size=(140, 30))
         self.Bind(wx.EVT_BUTTON, self.OnRandomConf, self.randomConfBtn)
 
         # Режим Force-контроля
-        self.ForceControlBtn = wx.Button(self.expPanel, label="ForceControl", pos=(470, 120), size=(140, 30))
+        self.ForceControlBtn = wx.Button(self.expPanel, label="ForceControl", pos=(470, 220), size=(140, 30))
         self.Bind(wx.EVT_BUTTON, self.OnForceControl, self.ForceControlBtn)
 
         # Режим Force-контроля
@@ -123,9 +127,15 @@ class KukaFrame(Frame):
 
     def OnGravityFind(self, event):
         """
-            эксперимент с гравитацией
+            эксперимент с гравитацией для всех звеньев
         """
         self.kuka.gravitationFindR()
+
+    def OnGravityFind3(self, event):
+        """
+            эксперимент с гравитацией для трех звеньев
+        """
+        self.kuka.gravitationFindR3()
 
     def OnWarmUPRobot(self,event):
         self.kuka.warmUpRobot()
