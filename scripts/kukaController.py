@@ -48,38 +48,84 @@ class KukaController(KukaWrapper):
         self.setPosAndWait(q0)
         rospy.sleep(0.5)
 
-        for i in range(1,l+1):
-            w = i*step
-            x = math.sqrt(w * w + h * h)
-            al1 = math.atan(h / w)
-            gm1 = math.acos((a2 * a2 + x * x - a3 * a3) / (2 * a2 * x))
-            q2 = math.pi / 2 - al1 - gm1
-            gm2 = math.acos((a2 * a2 + a3 * a3 - x * x) / (2 * a2 * a3))
-            q3 = math.pi - gm2
-            q4 = math.pi / 2 - q2 - q3
-            relQ = [0, q2, q3, q4, 0]
-            targetQ = [offset[j] + relQ[j] for j in range(5)]
+        for k in range(100):
+            isOk = True
+            for i in range(1,l+1):
+                w = i*step
+                x = math.sqrt(w * w + h * h)
+                al1 = math.atan(h / w)
+                gm1 = math.acos((a2 * a2 + x * x - a3 * a3) / (2 * a2 * x))
+                q2 = math.pi / 2 - al1 - gm1
+                gm2 = math.acos((a2 * a2 + a3 * a3 - x * x) / (2 * a2 * a3))
+                q3 = math.pi - gm2
+                q4 = math.pi / 2 - q2 - q3
+                relQ = [0, q2, q3, q4, 0]
+                targetQ = [offset[j] + relQ[j] for j in range(5)]
 
-            print('relQ {}'.format(relQ))
-            print('targetQ {}'.format(targetQ))
+                # получаем суммарное сверхусилие
+                sumOverG = sum(abs(self.overG))
+                print("sumOverG {}", sumOverG)
+                # если оно выше заданного значения
+                if sumOverG > maxOverG:
+                    print("Overload detected")
+                    isOk = False
+                    break
+                # переходим в следующую конфигурацию, сама функция возвращает нам false, если желаемая конфигурация недоступна
+                # из-за геометрических ограничений. М.б. стоит тогда изменить стартовую конфигурацию
+                # или уменьшить шаг/диапазон изменения угла третьего звена
+                self.setJointPositionsImm(targetQ)
+                rospy.sleep(0.1)
 
-            # получаем суммарное сверхусилие
-            sumOverG = sum(self.overG)
-            # если оно выше заданного значения
-            if sumOverG > maxOverG:
-                print("Мы словили сверхусилие, скоре всего кука куда-то врезалась")
+                # if self.setJointPositions(targetQ):
+                #     print("go to next pos {}".format(targetQ))
+                #     rospy.sleep(pauseTime)
+                # else:
+                #     print("error. it's bad")
+
+            rospy.sleep(1)
+            if not isOk:
                 break
-            # переходим в следующую конфигурацию, сама функция возвращает нам false, если желаемая конфигурация недоступна
-            # из-за геометрических ограничений. М.б. стоит тогда изменить стартовую конфигурацию
-            # или уменьшить шаг/диапазон изменения угла третьего звена
-            self.setJointPositionsImm(targetQ)
-            rospy.sleep(0.1)
 
-            # if self.setJointPositions(targetQ):
-            #     print("go to next pos {}".format(targetQ))
-            #     rospy.sleep(pauseTime)
-            # else:
-            #     print("error. it's bad")
+            for i in range(l + 1, 1, -1):
+                w = i * step
+                x = math.sqrt(w * w + h * h)
+                al1 = math.atan(h / w)
+                gm1 = math.acos((a2 * a2 + x * x - a3 * a3) / (2 * a2 * x))
+                q2 = math.pi / 2 - al1 - gm1
+                gm2 = math.acos((a2 * a2 + a3 * a3 - x * x) / (2 * a2 * a3))
+                q3 = math.pi - gm2
+                q4 = math.pi / 2 - q2 - q3
+                relQ = [0, q2, q3, q4, 0]
+                targetQ = [offset[j] + relQ[j] for j in range(5)]
+
+                # получаем суммарное сверхусилие
+                sumOverG = sum(abs(self.overG))
+                print("sumOverG {}", sumOverG)
+                # если оно выше заданного значения
+                if sumOverG > maxOverG:
+                    print("Overload detected")
+                    isOk = False
+                    break
+                # переходим в следующую конфигурацию, сама функция возвращает нам false, если желаемая конфигурация недоступна
+                # из-за геометрических ограничений. М.б. стоит тогда изменить стартовую конфигурацию
+                # или уменьшить шаг/диапазон изменения угла третьего звена
+                self.setJointPositionsImm(targetQ)
+                rospy.sleep(0.1)
+
+                # if self.setJointPositions(targetQ):
+                #     print("go to next pos {}".format(targetQ))
+                #     rospy.sleep(pauseTime)
+                # else:
+                #     print("error. it's bad")
+
+            if not isOk:
+                break
+
+            self.setPosAndWait(q0)
+            rospy.sleep(0.5)
+
+        if not isOk:
+            self.warn("ALARM")
 
     def forceControl(self):
         """
@@ -378,7 +424,8 @@ class KukaController(KukaWrapper):
         self.setGripperTorques(0.1, 0.1)
 
     def releaseFingers(self):
-        """
+        self.s = """
         разжать пальцы
         """
         self.setGripperPosAndWait(20, 20)
+

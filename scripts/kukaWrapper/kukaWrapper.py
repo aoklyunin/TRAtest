@@ -14,6 +14,7 @@ import geometry_msgs.msg
 import sensor_msgs.msg
 from kinematic import getDHMatrix, getG
 import time
+import numpy as np
 
 
 class KukaWrapper:
@@ -41,7 +42,7 @@ class KukaWrapper:
     TARGET_TYPE_FINGERS = 2
     TARGET_TYPE_NO_TARGET = -1
 
-    candlePos = [2.01, 1.09, -2.44, 1.74, 2.96]
+    candlePos = [2.9496, 1.1345, -2.5482, 1.7890, 2.9234]
 
     targetJPoses = [0, 0, 0, 0, 0]
     targetGPoses = [0, 0]
@@ -75,13 +76,13 @@ class KukaWrapper:
     G = [0] * 5
     F = [0] * 3
 
-    G_ERROR_RANGE = [1, 1.8, 0.95, 0.65, 0.4]
+    G_ERROR_RANGE = [10, 0, 0, 0, 10]
     G_K = [0.2, 0.1, 0.07, 0.3, 0.5]
     MAX_V = [0.4, 0.4, 0.4, 0.4, 0.4]
 
     reachedAction = False
 
-    def warn(self, message, caption='Ае!'):
+    def warn(self, message, caption='Warning'):
         """
             Показать сообщение
         :param message: Текст сообщения
@@ -125,7 +126,6 @@ class KukaWrapper:
         :return: True/False
         """
         xyz = self.getEndEffectorPosByJ(joints)
-        return True # HOTFIX: should be disabled #WARN
         # print(xyz)
         return self.checkPositionXYZEnable(xyz)
 
@@ -196,7 +196,7 @@ class KukaWrapper:
         """
             отправить робота в рандомные положения
         :param n: кол-во положений
-        :param tp: пауза в секндах между командами
+        :param tp: пауза в секундах между командами
         :return:
         """
         for i in range(n):
@@ -273,16 +273,61 @@ class KukaWrapper:
                 flg = False
         return flg
 
+    def sign(self, x):
+        return 1 if x >= 0 else -1
+
+    def getGravityTorques(self, currentTorques, q):
+        offset = [2.9496, 1.1345, -2.5482, 1.7890, 2.9234]  # by passport
+        angle = [q[j] - offset[j] for j in range(5)]
+
+        theta1 = np.array([-0.9762, 0.2294, -2.1608, 0.0582, -3.2580, -0.2012, 0.3085])
+        theta2 = np.array([-0.9441, 0.0091, -1.9762, -0.0198, 0.1136])
+        theta3 = [-0.7205, 0.0084, 0.1464]
+
+        phi1 = np.array([math.sin(angle[1] + angle[2] + angle[3]),
+                math.cos(angle[1] + angle[2] + angle[3]),
+                math.sin(angle[1] + angle[2]),
+                math.cos(angle[1] + angle[2]),
+                math.sin(angle[1]),
+                math.cos(angle[1]),
+                self.sign(currentTorques[1])])
+
+        phi2 = np.array([math.sin(angle[1] + angle[2] + angle[3]),
+                math.cos(angle[1] + angle[2] + angle[3]),
+                math.sin(angle[1] + angle[2]),
+                math.cos(angle[1] + angle[2]),
+                self.sign(currentTorques[2])])
+
+        phi3 = [math.sin(angle[1] + angle[2] + angle[3]),
+                math.cos(angle[1] + angle[2] + angle[3]),
+                self.sign(currentTorques[3])]
+
+        torques = [
+            0,
+            sum(theta1*np.transpose(phi1)),
+            sum(theta2*np.transpose(phi2)),
+            sum([theta3[0]*phi3[0], theta3[1]*phi3[1], theta3[2]*phi3[2]]),
+            0
+        ]
+
+        return torques
+
     def calculateOverG(self):
         """
              посчитать избыточные моменты
         :return: массив(список) избыточных моментов на каждом звене
         """
 
+        gravityTorques = self.getGravityTorques(self.jointState.effort, self.jointState.position)
+
         for i in range(5):
-            self.overG[i] = self.jointState.effort[i] - self.G[i]
+            self.overG[i] = self.jointState.effort[i] - gravityTorques[i]
             if abs(self.overG[i]) < self.G_ERROR_RANGE[i]:
                 self.overG[i] = 0
+
+        # print('OverG {}'.format(self.overG))
+        # print('r {}'.format(self.jointState.effort))
+        # print('e {}'.format(gravityTorques))
 
     def getF(self):
         self.F[0] = self.overG[0]
@@ -296,7 +341,7 @@ class KukaWrapper:
         """
         # созраняем пришедшее значение
         self.jointState = data
-        self.G = getG(data.position, data.effort)
+        self.G = self.getGravityTorques(self.jointState.effort, self.jointState.position)
         self.calculateOverG()
         self.getF()
         sum = 0

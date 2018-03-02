@@ -101,13 +101,19 @@ class KukaFrame(Frame):
         '''
         Оценка массы
         '''
-        wx.StaticText(self.panel, -1, "Estimated mass:", (220, 270))
+        # wx.StaticText(self.panel, -1, "Estimated mass:", (220, 270))
 
         '''
         Демо
         '''
         self.linearMovementBtn = wx.Button(self.expPanel, label="Linear", pos=(320, 270), size=(130, 30))
         self.Bind(wx.EVT_BUTTON, self.OnStartLinearMove, self.linearMovementBtn)
+
+    def AlarmText(self):
+        self.alarmText = wx.StaticText(self.expPanel, label="ALARM", pos=(290, 380))
+        self.alarmText.SetForegroundColour((255, 51, 51))  # set text color
+        font = wx.Font(24, wx.DEFAULT, wx.NORMAL, wx.BOLD)
+        self.alarmText.SetFont(font)
 
     def ExpTimer(self):
         """
@@ -195,5 +201,5 @@ class KukaFrame(Frame):
 
     def OnStartLinearMove(self, event):
         pauseTime = 0.1
-        maxOverG = 100
+        maxOverG = 6
         self.kuka.linearMove( pauseTime, maxOverG)
