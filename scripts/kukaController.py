@@ -32,12 +32,13 @@ class KukaController(KukaWrapper):
         """
         return [joints[i] - self.jointOffsets[i] for i in range(5)]
 
-    def linearMove(self, q3Angle, pauseTime, maxOverG):
+    def linearMove(self, q3Angle, pauseTime, maxOverG,moveCnt):
         """
             Прямолинейное движение
             :param q2Angle: на сколько должно повернуться третье звено
             :param pauseTime: остановки между перемещениями
             :param maxOverG: Максимальное сверхусилие, изсеряемое кукой
+            :param moveCnt: Кол-во шагов
         """
 
         # третье звено имеет отрицательное направление вращения
@@ -52,9 +53,9 @@ class KukaController(KukaWrapper):
         # получаем текущую высоту энд-эффектора
         H = np.sin(q3) * d3 + np.sin(q4)*d4
 
-        for i in range(int(q3Angle * 20)):
+        for i in range(int(q3Angle * moveCnt)):
             # меняем q3 с заданным шагом
-            newQ3 = q3 + i / 20 * q3Angle
+            newQ3 = q3 + i / moveCnt * q3Angle
             # получаем высоту третьего звена
             h3 = np.sin(q3) * d3
             h4 = H - h3
