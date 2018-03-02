@@ -193,9 +193,7 @@ class KukaFrame(Frame):
     def OnFingersRelease(self,event):
         self.kuka.releaseFingers()
 
-
     def OnStartLinearMove(self, event):
-        q3Angle = -1.0
         pauseTime = 0.1
         maxOverG = 100
-        self.kuka.linearMove( q3Angle, pauseTime, maxOverG)
+        self.kuka.linearMove( pauseTime, maxOverG)

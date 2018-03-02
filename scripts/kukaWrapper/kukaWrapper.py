@@ -125,7 +125,7 @@ class KukaWrapper:
         :return: True/False
         """
         xyz = self.getEndEffectorPosByJ(joints)
-
+        return True # HOTFIX: should be disabled #WARN
         # print(xyz)
         return self.checkPositionXYZEnable(xyz)
 
@@ -155,7 +155,7 @@ class KukaWrapper:
                 self.task[k] = joints[k]
             cnt = 0
             while self.targetType == self.TARGET_TYPE_MANY_JOINTS and cnt < 5:
-                rospy.sleep(0.2)
+                rospy.sleep(0.1)
                 cnt += 1
             return True
         return False
@@ -527,6 +527,26 @@ class KukaWrapper:
         self.targetType = self.TARGET_TYPE_MANY_JOINTS
 
         rospy.sleep(1)
+
+    def setJointPositionsImm(self, joints):
+        """
+            задаём положения джоинтов в радианах
+        :param joints: массив из пяти элементов с желаемыми положениями
+        """
+        msg = brics_actuator.msg.JointPositions()
+        msg.positions = []
+        # в цикле создаём объекты для сообщения, подробнее смотри setGripperPositions
+        for i in range(5):
+            j = joints[i]
+            if j > self.jointsRange[i][1]:
+                j = self.jointsRange[i][1]
+            if j < self.jointsRange[i][0]:
+                j = self.jointsRange[i][0]
+            jv = self.generateJoinVal(i + 1, j, self.TYPE_JOINT_POSITIONS)
+            msg.positions.append(jv)
+        self.positionArmPub.publish(msg)
+        self.targetJPoses = joints
+        self.targetType = self.TARGET_TYPE_MANY_JOINTS
 
     def setJointPosition(self, joint_num, value):
         """

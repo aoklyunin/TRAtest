@@ -6,6 +6,7 @@
 """
 import random
 import numpy as np
+import math
 
 import datetime
 import rospy
@@ -32,43 +33,36 @@ class KukaController(KukaWrapper):
         """
         return [joints[i] - self.jointOffsets[i] for i in range(5)]
 
-    def linearMove(self, q3Angle, pauseTime, maxOverG):
-        """
-            Прямолинейное движение
-            :param q3Angle: на сколько должно повернуться третье звено
-            :param pauseTime: остановки между перемещениями
-            :param maxOverG: Максимальное сверхусилие, измеряемое кукой
-        """
+    def linearMove(self, pauseTime, maxOverG):
 
-        # третье звено имеет отрицательное направление вращения
-        sj = self.getStandartJoints()
-        # третье звено вращается в другую сторону, поэтому везде придётся менять знак
-        q3 = sj[2]
-        q4 = sj[3]
+        h = 0.160
+        a2 = 0.155
+        a3 = 0.135
+        wm = 0.2
+        step = 0.005
+        l = int(wm/step)
 
-        d3 = 0.135
-        d4 = 0.19426
+        offset = [2.9496, 1.1345, -2.5482, 1.7890, 2.9234] # by passport
 
-        initialPos = [2.95, 2, -3.5, 0.5, 2.92]
-        self.setPosAndWait(initialPos)
+        q0 = [2.9496, 0.3126353442254447, -0.5708350764190571, 2.2042960589885086, 2.9234]
+        self.setPosAndWait(q0)
+        rospy.sleep(0.5)
 
-        # получаем текущую высоту энд-эффектора
-        H = np.sin(q3) * d3 + np.sin(q4)*d4
+        for i in range(1,l+1):
+            w = i*step
+            x = math.sqrt(w * w + h * h)
+            al1 = math.atan(h / w)
+            gm1 = math.acos((a2 * a2 + x * x - a3 * a3) / (2 * a2 * x))
+            q2 = math.pi / 2 - al1 - gm1
+            gm2 = math.acos((a2 * a2 + a3 * a3 - x * x) / (2 * a2 * a3))
+            q3 = math.pi - gm2
+            q4 = math.pi / 2 - q2 - q3
+            relQ = [0, q2, q3, q4, 0]
+            targetQ = [offset[j] + relQ[j] for j in range(5)]
 
-        for i in range(20):
-            # меняем q3 с заданным шагом
-            sj = self.getStandartJoints()
-            q3 = sj[2]
-            newQ3 = q3 + q3Angle/20
-            # получаем высоту третьего звена
-            h3 = np.sin(q3) * d3
-            h4 = H - h3
-            # мы получаем угол, но он является суммо q3 и q4, поэтому нужно вычесть q3
-            newQ4 = -np.arcsin(h4 / d4) - q3
-            # получаем координаты в классической СК
-            targetStandartQ = [sj[0], sj[1], newQ3, newQ4, sj[4]]
-            # переводим в координаты куки
-            targetQ = self.getKukaJoints(targetStandartQ)
+            print('relQ {}'.format(relQ))
+            print('targetQ {}'.format(targetQ))
+
             # получаем суммарное сверхусилие
             sumOverG = sum(self.overG)
             # если оно выше заданного значения
@@ -78,11 +72,14 @@ class KukaController(KukaWrapper):
             # переходим в следующую конфигурацию, сама функция возвращает нам false, если желаемая конфигурация недоступна
             # из-за геометрических ограничений. М.б. стоит тогда изменить стартовую конфигурацию
             # или уменьшить шаг/диапазон изменения угла третьего звена
-            if self.setPosAndWait(targetQ):
-                print("go to next pos {}".format(targetQ))
-                # rospy.sleep(pauseTime)
-            else:
-                print("error. it's bad")
+            self.setJointPositionsImm(targetQ)
+            rospy.sleep(0.1)
+
+            # if self.setJointPositions(targetQ):
+            #     print("go to next pos {}".format(targetQ))
+            #     rospy.sleep(pauseTime)
+            # else:
+            #     print("error. it's bad")
 
     def forceControl(self):
         """
