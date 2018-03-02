@@ -155,7 +155,7 @@ class KukaWrapper:
                 self.task[k] = joints[k]
             cnt = 0
             while self.targetType == self.TARGET_TYPE_MANY_JOINTS and cnt < 5:
-                rospy.sleep(0.5)
+                rospy.sleep(0.2)
                 cnt += 1
             return True
         return False

@@ -103,6 +103,12 @@ class KukaFrame(Frame):
         '''
         wx.StaticText(self.panel, -1, "Estimated mass:", (220, 270))
 
+        '''
+        Демо
+        '''
+        self.linearMovementBtn = wx.Button(self.expPanel, label="Linear", pos=(320, 270), size=(130, 30))
+        self.Bind(wx.EVT_BUTTON, self.OnStartLinearMove, self.linearMovementBtn)
+
     def ExpTimer(self):
         """
             Таймер, срабатывает два раза в секунду. Всё, что сюда напишешь будет выполняться каждые 500 мсек
@@ -186,3 +192,10 @@ class KukaFrame(Frame):
 
     def OnFingersRelease(self,event):
         self.kuka.releaseFingers()
+
+
+    def OnStartLinearMove(self, event):
+        q3Angle = -1.0
+        pauseTime = 0.1
+        maxOverG = 100
+        self.kuka.linearMove( q3Angle, pauseTime, maxOverG)
