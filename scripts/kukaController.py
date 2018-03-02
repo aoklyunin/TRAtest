@@ -35,33 +35,38 @@ class KukaController(KukaWrapper):
     def linearMove(self, q3Angle, pauseTime, maxOverG):
         """
             Прямолинейное движение
-            :param q2Angle: на сколько должно повернуться третье звено
+            :param q3Angle: на сколько должно повернуться третье звено
             :param pauseTime: остановки между перемещениями
-            :param maxOverG: Максимальное сверхусилие, изсеряемое кукой
+            :param maxOverG: Максимальное сверхусилие, измеряемое кукой
         """
 
         # третье звено имеет отрицательное направление вращения
         sj = self.getStandartJoints()
         # третье звено вращается в другую сторону, поэтому везде придётся менять знак
-        q3 = -sj[2]
+        q3 = sj[2]
         q4 = sj[3]
 
         d3 = 0.135
         d4 = 0.19426
 
+        initialPos = [2.95, 2, -3.5, 0.5, 2.92]
+        self.setPosAndWait(initialPos)
+
         # получаем текущую высоту энд-эффектора
         H = np.sin(q3) * d3 + np.sin(q4)*d4
 
-        for i in range(int(q3Angle * 20)):
+        for i in range(20):
             # меняем q3 с заданным шагом
-            newQ3 = q3 + i / 20 * q3Angle
+            sj = self.getStandartJoints()
+            q3 = sj[2]
+            newQ3 = q3 + q3Angle/20
             # получаем высоту третьего звена
             h3 = np.sin(q3) * d3
             h4 = H - h3
             # мы получаем угол, но он является суммо q3 и q4, поэтому нужно вычесть q3
-            newQ4 = np.arcsin(h4 / d4) - q3
+            newQ4 = -np.arcsin(h4 / d4) - q3
             # получаем координаты в классической СК
-            targetStandartQ = [sj[0], sj[1], -newQ3, newQ4, sj[4]]
+            targetStandartQ = [sj[0], sj[1], newQ3, newQ4, sj[4]]
             # переводим в координаты куки
             targetQ = self.getKukaJoints(targetStandartQ)
             # получаем суммарное сверхусилие
@@ -74,7 +79,8 @@ class KukaController(KukaWrapper):
             # из-за геометрических ограничений. М.б. стоит тогда изменить стартовую конфигурацию
             # или уменьшить шаг/диапазон изменения угла третьего звена
             if self.setPosAndWait(targetQ):
-                rospy.sleep(pauseTime)
+                print("go to next pos {}".format(targetQ))
+                # rospy.sleep(pauseTime)
             else:
                 print("error. it's bad")
 
