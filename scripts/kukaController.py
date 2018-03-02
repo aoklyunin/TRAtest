@@ -18,6 +18,66 @@ class KukaController(KukaWrapper):
        Класс управления кукой
     """
 
+    def getStandartJoints(self):
+        """
+        :return: реальные углы куки
+        """
+        return [self.jointOffsets[i] + self.jointState.position[i] for i in range(5)]
+
+    def getKukaJoints(self, joints):
+        """
+
+        :param joints: реальные углы куки
+        :return: углы, зашитые в росе
+        """
+        return [joints[i] - self.jointOffsets[i] for i in range(5)]
+
+    def linearMove(self, q3Angle, pauseTime, maxOverG):
+        """
+            Прямолинейное движение
+            :param q2Angle: на сколько должно повернуться третье звено
+            :param pauseTime: остановки между перемещениями
+            :param maxOverG: Максимальное сверхусилие, изсеряемое кукой
+        """
+
+        # третье звено имеет отрицательное направление вращения
+        sj = self.getStandartJoints()
+        # третье звено вращается в другую сторону, поэтому везде придётся менять знак
+        q3 = -sj[2]
+        q4 = sj[3]
+
+        d3 = 0.135
+        d4 = 0.19426
+
+        # получаем текущую высоту энд-эффектора
+        H = np.sin(q3) * d3 + np.sin(q4)*d4
+
+        for i in range(int(q3Angle * 20)):
+            # меняем q3 с заданным шагом
+            newQ3 = q3 + i / 20 * q3Angle
+            # получаем высоту третьего звена
+            h3 = np.sin(q3) * d3
+            h4 = H - h3
+            # мы получаем угол, но он является суммо q3 и q4, поэтому нужно вычесть q3
+            newQ4 = np.arcsin(h4 / d4) - q3
+            # получаем координаты в классической СК
+            targetStandartQ = [sj[0], sj[1], -newQ3, newQ4, sj[4]]
+            # переводим в координаты куки
+            targetQ = self.getKukaJoints(targetStandartQ)
+            # получаем суммарное сверхусилие
+            sumOverG = sum(self.overG)
+            # если оно выше заданного значения
+            if sumOverG > maxOverG:
+                print("Мы словили сверхусилие, скоре всего кука куда-то врезалась")
+                break
+            # переходим в следующую конфигурацию, сама функция возвращает нам false, если желаемая конфигурация недоступна
+            # из-за геометрических ограничений. М.б. стоит тогда изменить стартовую конфигурацию
+            # или уменьшить шаг/диапазон изменения угла третьего звена
+            if self.setPosAndWait(targetQ):
+                rospy.sleep(pauseTime)
+            else:
+                print("error. it's bad")
+
     def forceControl(self):
         """
             режим Force-Control
@@ -143,8 +203,6 @@ class KukaController(KukaWrapper):
                             #         val = float(i) / 10
                             #         print(val)
 
-
-
     def gravitationFindQ(self):
         Q = [
             [0.6230, 0.2000, - 0.3276, 0.2350, 3.2646],
@@ -188,11 +246,11 @@ class KukaController(KukaWrapper):
         return j
 
     def frictionRandomVarianceExp(self):
-        #self.setRobotToCandle()
-        #rospy.sleep(1)
+        # self.setRobotToCandle()
+        # rospy.sleep(1)
         j = self.jointState.position
-        #for i in range(5):
-            # j = self.jointState.position
+        # for i in range(5):
+        # j = self.jointState.position
         for k in range(20):
             self.moveToNearRandomConf(1)
             self.moveToConf(j, 10)
@@ -259,7 +317,7 @@ class KukaController(KukaWrapper):
             j = [0, 0, 0, 0, 0]
             for i in range(5):
                 pos = positions[i]
-                j[i] = random.uniform(max(0.95*pos,self.jointsRange[i][0]), min(1.05*pos,self.jointsRange[i][1]))
+                j[i] = random.uniform(max(0.95 * pos, self.jointsRange[i][0]), min(1.05 * pos, self.jointsRange[i][1]))
 
             if self.setPosAndWait(j):
                 rospy.sleep(sleepTime)
@@ -279,7 +337,6 @@ class KukaController(KukaWrapper):
             targetPos = candlePosJ4 + offset
             self.setJointPosition(j, targetPos)
             rospy.sleep(3)
-
 
     def zeroMomentB(self, j):
         """
