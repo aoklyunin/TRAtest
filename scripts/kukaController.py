@@ -188,14 +188,20 @@ class KukaController(KukaWrapper):
         return j
 
     def frictionRandomVarianceExp(self):
-        for i in range(5):
-            j = self.getRandomConf()
-            for k in range(75):
-                self.moveToRandomConf(0.5)
-                self.moveToConf(j, 10)
-                print('position {}, itteration {}'.format(i, k))
+        #self.setRobotToCandle()
+        #rospy.sleep(1)
+        j = self.jointState.position
+        #for i in range(5):
+            # j = self.jointState.position
+        for k in range(20):
+            self.moveToNearRandomConf(1)
+            self.moveToConf(j, 10)
+            print('itteration {}, pos {}'.format(k, j))
 
     def frictionMaxVarianceExp(self):
+        self.setRobotToCandle()
+        rospy.sleep(1)
+
         currentPos = self.jointState.position
         positions = [
             [currentPos[0], self.jointsRange[1][0], currentPos[2], currentPos[3], currentPos[4]],
@@ -204,10 +210,14 @@ class KukaController(KukaWrapper):
 
         for i in range(len(positions)):
             j = positions[i]
+
             for k in range(75):
-                self.moveToRandomConf(1)
+                self.moveToNearRandomConf(1)
                 self.moveToConf(j, 10)
                 print('position {}, itteration {}, pos {}'.format(i, k, j))
+
+            self.setRobotToCandle()
+            rospy.sleep(1)
 
     def moveToConf(self, j, sleepTime):
         flgMoved = False
@@ -237,6 +247,19 @@ class KukaController(KukaWrapper):
             j = [0, 0, 0, 0, 0]
             for i in range(5):
                 j[i] = random.uniform(self.jointsRange[i][0], self.jointsRange[i][1])
+
+            if self.setPosAndWait(j):
+                rospy.sleep(sleepTime)
+                flgMoved = True
+
+    def moveToNearRandomConf(self, sleepTime):
+        flgMoved = False
+        positions = self.jointState.position
+        while not flgMoved:
+            j = [0, 0, 0, 0, 0]
+            for i in range(5):
+                pos = positions[i]
+                j[i] = random.uniform(max(0.95*pos,self.jointsRange[i][0]), min(1.05*pos,self.jointsRange[i][1]))
 
             if self.setPosAndWait(j):
                 rospy.sleep(sleepTime)
@@ -287,3 +310,15 @@ class KukaController(KukaWrapper):
         for i in range(30):
             self.zeroMomentA(j)
             self.zeroMomentB(j)
+
+    def squeezeFingers(self):
+        """
+        сжать пальцы
+        """
+        self.setGripperTorques(0.1, 0.1)
+
+    def releaseFingers(self):
+        """
+        разжать пальцы
+        """
+        self.setGripperPosAndWait(20, 20)

@@ -90,6 +90,13 @@ class KukaFrame(Frame):
         self.frictionMaxFindBtn = wx.Button(self.expPanel, label="Friction (max)", pos=(30, 270), size=(140, 30))
         self.Bind(wx.EVT_BUTTON, self.OnFrictionMaxFind, self.frictionMaxFindBtn)
 
+        # Сжать пальцы
+        self.fingersSqueezeBtn = wx.Button(self.expPanel, label="Squeeze fingers", pos=(170, 220), size=(140, 30))
+        self.Bind(wx.EVT_BUTTON, self.OnFingersSqueeze, self.fingersSqueezeBtn)
+
+        # Разжать пальцы
+        self.fingersReleaseBtn = wx.Button(self.expPanel, label="Realease fingers", pos=(170, 270), size=(140, 30))
+        self.Bind(wx.EVT_BUTTON, self.OnFingersRelease, self.fingersReleaseBtn)
 
     def ExpTimer(self):
         """
@@ -167,3 +174,10 @@ class KukaFrame(Frame):
 
     def OnFrictionMaxFind(self,event):
         self.kuka.frictionMaxVarianceExp()
+
+    def OnFingersSqueeze(self,event):
+        self.kuka.setGripperPositions(10,10)
+        print "Button is push"
+
+    def OnFingersRelease(self,event):
+        self.kuka.releaseFingers()

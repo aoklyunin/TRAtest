@@ -38,11 +38,13 @@ class KukaWrapper:
 
     TARGET_TYPE_MANY_JOINTS = 0
     TARGET_TYPE_ONE_JOINT = 1
+    TARGET_TYPE_FINGERS = 2
     TARGET_TYPE_NO_TARGET = -1
 
     candlePos = [2.01, 1.09, -2.44, 1.74, 2.96]
 
     targetJPoses = [0, 0, 0, 0, 0]
+    targetGPoses = [0, 0]
     targetJPos = 0
     targetJposNum = -1
     targetType = TARGET_TYPE_NO_TARGET
@@ -155,6 +157,29 @@ class KukaWrapper:
             while self.targetType == self.TARGET_TYPE_MANY_JOINTS and cnt < 5:
                 rospy.sleep(0.5)
                 cnt += 1
+            return True
+        return False
+
+    def checkFingerPosition(self, fingerPos):
+        return True
+
+    def setGripperPosAndWait(self, leftP, rightP):
+        """
+        установить желаемое положение пальцев и ждать,
+        пока оно не будет достигнуто
+        """
+        if self.checkFingerPosition(leftP) and self.checkFingerPosition(rightP):
+            self.task[5] = leftP
+            self.task[6] = rightP
+            self.targetGPoses = [leftP, rightP]
+            self.targetType = self.TARGET_TYPE_FINGERS
+            self.setGripperPositions(leftP, rightP)
+
+            cnt = 0
+            while self.targetType == self.TARGET_TYPE_FINGERS and cnt < 5:
+                rospy.sleep(0.5)
+                cnt += 1
+
             return True
         return False
 
@@ -284,6 +309,7 @@ class KukaWrapper:
         )
 
         self.outLog.write(logStr)
+
         if self.targetType == self.TARGET_TYPE_MANY_JOINTS:
             for i in range(5):
                 delta = (self.targetJPoses[i] - data.position[i])
@@ -292,9 +318,15 @@ class KukaWrapper:
             sum = math.sqrt(sum) / 5
         elif self.targetType == self.TARGET_TYPE_ONE_JOINT:
             sum = abs(self.targetJPos - data.position[self.targetJposNum])
+        elif self.targetType == self.TARGET_TYPE_FINGERS:
+            for i in range(2):
+                delta = (self.targetGPoses[i] - data.position[5 + i])
+                sum += delta * delta
 
         if sum < 0.1 and self.targetType != self.TARGET_TYPE_NO_TARGET:
             self.targetType = self.TARGET_TYPE_NO_TARGET
+
+        # print('left {}, right{}, target {}'.format(self.task[5], self.task[6], self.targetType))
 
     def __init__(self):
         """
@@ -308,7 +340,7 @@ class KukaWrapper:
         self.velocityArmPub = rospy.Publisher("/arm_1/arm_controller/velocity_command",
                                               brics_actuator.msg.JointVelocities, queue_size=1)
         self.cartVelPub = rospy.Publisher("/cmd_vel", geometry_msgs.msg.Twist, queue_size=1)
-        self.positionGripperPub = rospy.Publisher("/gripper_controller/position_command",
+        self.positionGripperPub = rospy.Publisher("/arm_1/gripper_controller/position_command",
                                                   brics_actuator.msg.JointPositions, queue_size=1)
         self.forceGripperPub = rospy.Publisher("/gripper_controller/force_command", brics_actuator.msg.JointTorques,
                                                queue_size=1)
@@ -402,7 +434,7 @@ class KukaWrapper:
         # размерность
         jv.unit = self.getUnitValue(self.TYPE_GRIPPER_POSITION)
         # значение делим на 1000, так как масимальное смещение гриппера 110 мм
-        jv.value = leftG / 1000
+        jv.value = 0.01
         # добавляем объект в сообщение
         msg.positions.append(jv)
         # делаем тоже самое для правого пальца
@@ -411,7 +443,7 @@ class KukaWrapper:
         jv.timeStamp = rospy.Time.now()
         jv.joint_uri = "gripper_finger_joint_r"
         jv.unit = self.getUnitValue(self.TYPE_GRIPPER_POSITION)
-        jv.value = rightG / 1000
+        jv.value = 0.005
         msg.positions.append(jv)
         # публикуем сообщение в топике
         self.positionGripperPub.publish(msg)
@@ -539,7 +571,7 @@ class KukaWrapper:
 
     def setJointVelocity(self, joint_num, value):
         """
-            задаёт скорости джоинтов в рад/с
+            задаёт скорости джоинтов в рады/с
         :param joints: массив из пяти элементов с желаемыми скорости
         """
         self.task[joint_num - 1] = value
@@ -550,7 +582,7 @@ class KukaWrapper:
 
     def setJointVelocities(self, joints):
         """
-             задаёт скорость джоинта в рад/с
+        задаёт скорость джоинта в рад/с
         :param joint_num: номер джоинта
         :param value: желаемая скорость
         """
