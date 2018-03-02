@@ -83,20 +83,25 @@ class KukaFrame(Frame):
         Исследование трения
         '''
         # Повторяемость в случайных позициях
-        self.frictionRandFindBtn = wx.Button(self.expPanel, label="Friction (rand)", pos=(30, 220), size=(140, 30))
+        self.frictionRandFindBtn = wx.Button(self.expPanel, label="Friction (rand)", pos=(30, 220), size=(130, 30))
         self.Bind(wx.EVT_BUTTON, self.OnFrictionRandFind, self.frictionRandFindBtn)
 
         # Повторяемость в крайних положениях
-        self.frictionMaxFindBtn = wx.Button(self.expPanel, label="Friction (max)", pos=(30, 270), size=(140, 30))
+        self.frictionMaxFindBtn = wx.Button(self.expPanel, label="Friction (max)", pos=(30, 270), size=(130, 30))
         self.Bind(wx.EVT_BUTTON, self.OnFrictionMaxFind, self.frictionMaxFindBtn)
 
         # Сжать пальцы
-        self.fingersSqueezeBtn = wx.Button(self.expPanel, label="Squeeze fingers", pos=(170, 220), size=(140, 30))
+        self.fingersSqueezeBtn = wx.Button(self.expPanel, label="Squeeze fingers", pos=(170, 220), size=(130, 30))
         self.Bind(wx.EVT_BUTTON, self.OnFingersSqueeze, self.fingersSqueezeBtn)
 
         # Разжать пальцы
-        self.fingersReleaseBtn = wx.Button(self.expPanel, label="Realease fingers", pos=(170, 270), size=(140, 30))
+        self.fingersReleaseBtn = wx.Button(self.expPanel, label="Realease fingers", pos=(170, 270), size=(130, 30))
         self.Bind(wx.EVT_BUTTON, self.OnFingersRelease, self.fingersReleaseBtn)
+
+        '''
+        Оценка массы
+        '''
+        wx.StaticText(self.panel, -1, "Estimated mass:", (220, 270))
 
     def ExpTimer(self):
         """
