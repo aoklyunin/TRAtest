@@ -48,6 +48,8 @@ class KukaController(KukaWrapper):
         self.setPosAndWait(q0)
         rospy.sleep(0.5)
 
+        isOk = True
+
         for k in range(100):
             isOk = True
             for i in range(1,l+1):
@@ -83,6 +85,7 @@ class KukaController(KukaWrapper):
                 #     print("error. it's bad")
 
             rospy.sleep(1)
+
             if not isOk:
                 break
 
