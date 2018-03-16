@@ -372,12 +372,12 @@ class KukaWrapper:
         self.calculateOverG()
         self.getF()
         sum = 0
-        logStr = "%.4f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f\n" % (
+        logStr = "%.4f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%s,%s\n" % (
             time.time() - self.startTime,
             data.position[0], data.position[1], data.position[2], data.position[3], data.position[4],
-            data.velocity[0], data.position[1], data.velocity[2], data.velocity[3], data.velocity[4],
+            data.velocity[0], data.velocity[1], data.velocity[2], data.velocity[3], data.velocity[4],
             data.effort[0], data.effort[1], data.effort[2], data.effort[3], data.effort[4],
-            self.task[0], self.task[1], self.task[2], self.task[3], self.task[4],
+            self.task[0], self.task[1], self.task[2], self.task[3], self.task[4], self.outLogMode, self.outLogSubMode
         )
 
         self.outLog.write(logStr)
@@ -421,8 +421,14 @@ class KukaWrapper:
         self.jointStateSubscriber = rospy.Subscriber("/joint_states", sensor_msgs.msg.JointState,
                                                      self.jointStateCallback)
         dt = datetime.datetime.now()
-        date = dt.strftime("%d_%m_%Y_%I_%M%p")
+        date = dt.strftime("%Y%m%d_%I%M%p")
+        self.outLogMode = 'default'
+        self.outLogSubMode = 'default'
+
         self.outLog = open('logs/' + date + '.csv', 'wb')
+
+        logHead = "t,j1,j2,j3,j4,j5,w1,w2,w3,w4,w5,t1,t2,t3,t4,t5,task1,task2,task3,task4,task5,mode,submode\n"
+        self.outLog.write(logHead)
 
         self.startTime = time.time()
         # пауза необходима для правильной обработки пакетов
