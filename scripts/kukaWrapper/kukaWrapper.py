@@ -398,8 +398,6 @@ class KukaWrapper:
         if sum < 0.1 and self.targetType != self.TARGET_TYPE_NO_TARGET:
             self.targetType = self.TARGET_TYPE_NO_TARGET
 
-        # print('left {}, right{}, target {}'.format(self.task[5], self.task[6], self.targetType))
-
     def __init__(self):
         """
             конструктор
@@ -589,20 +587,7 @@ class KukaWrapper:
             задаём положения джоинтов в радианах
         :param joints: массив из пяти элементов с желаемыми положениями
         """
-        msg = brics_actuator.msg.JointPositions()
-        msg.positions = []
-        # в цикле создаём объекты для сообщения, подробнее смотри setGripperPositions
-        for i in range(5):
-            j = joints[i]
-            if j > self.jointsRange[i][1]:
-                j = self.jointsRange[i][1]
-            if j < self.jointsRange[i][0]:
-                j = self.jointsRange[i][0]
-            jv = self.generateJoinVal(i + 1, j, self.TYPE_JOINT_POSITIONS)
-            msg.positions.append(jv)
-        self.positionArmPub.publish(msg)
-        self.targetJPoses = joints
-        self.targetType = self.TARGET_TYPE_MANY_JOINTS
+        self.setJointPositionsImm(joints)
 
         rospy.sleep(1)
 

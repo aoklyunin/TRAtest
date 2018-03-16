@@ -88,6 +88,12 @@ class Frame(wx.Frame):
         """
         self.kuka.setJointPositions(self.getJoinfFromText())
 
+    def OnSendJPosV(self, event):
+        """
+            управление положением по джоинтам c инжекцией вч сигнала на 10с
+        """
+        self.kuka.moveToConfV(self.getJoinfFromText(), 10)
+
     def OnSendJVel(self, event):
         """
             управление скоростями по джоинтам
@@ -240,6 +246,10 @@ class Frame(wx.Frame):
         # конпки управления джоинтами и привязка методов к ним
         self.sendJposBtn = wx.Button(self.panel, label="Положения", pos=(30, 260), size=(100, 30))
         self.Bind(wx.EVT_BUTTON, self.OnSendJPos, self.sendJposBtn)
+        # выставить в положение с инжекций высокочастотного сигнала
+        self.sendJposVBtn = wx.Button(self.panel, label="Положения (В)", pos=(140, 260), size=(120, 30))
+        self.Bind(wx.EVT_BUTTON, self.OnSendJPosV, self.sendJposVBtn)
+
         self.sendJvelBtn = wx.Button(self.panel, label="Скорости", pos=(30, 300), size=(100, 30))
         self.Bind(wx.EVT_BUTTON, self.OnSendJVel, self.sendJvelBtn)
         self.sendJtorBtn = wx.Button(self.panel, label="Моменты", pos=(30, 340), size=(100, 30))

@@ -276,9 +276,18 @@ class KukaController(KukaWrapper):
                 rospy.sleep(4)
 
     def gravitationFindR3(self):
-        for i in range(400):
-            self.moveToRandomConf3(10)
-            print(i)
+        pos = self.jointState.position
+
+        for i in range(500):
+            j = self.getRandomConf()
+            j[0] = pos[0]
+            j[4] = pos[4]
+            print('position {}, pos {}'.format(i, j))
+            self.outLogMode = 'gravitationFindR3'
+            self.outLogSubMode = 'pos_' + str(i)
+            self.moveToConfV(j, 10)
+            print('position {}, pos {}'.format(i, j))
+            rospy.sleep(1)
 
     def gravitationFindR(self):
         for i in range(500):
@@ -304,9 +313,10 @@ class KukaController(KukaWrapper):
         # for i in range(5):
         # j = self.jointState.position
         for k in range(20):
-            self.moveToNearRandomConf(1)
+            # self.moveToNearRandomConf(1)
+            self.moveToRandomConf(1)
             self.moveToConf(j, 10)
-            print('itteration {}, pos {}'.format(k, j))
+            print('iteration {}, pos {}'.format(k, j))
 
     def frictionMaxVarianceExp(self):
         self.setRobotToCandle()
@@ -321,13 +331,40 @@ class KukaController(KukaWrapper):
         for i in range(len(positions)):
             j = positions[i]
 
-            for k in range(75):
-                self.moveToNearRandomConf(1)
-                self.moveToConf(j, 10)
-                print('position {}, itteration {}, pos {}'.format(i, k, j))
+            for k in range(25):
+                self.outLogMode = 'frictionMaxVarianceExp'
+                self.outLogSubMode = 'reset'
+                self.moveToRandomConf(1)
+                self.outLogSubMode = 'pos_' + str(i) + '_it_' + str(k)
+                self.moveToConfV(j, 10)
+                print('position {}, iteration {}, pos {}'.format(i, k, j))
 
             self.setRobotToCandle()
             rospy.sleep(1)
+
+    def moveToConfV(self, j, sleepTime):
+        flgMoved = False
+        rate = 30 #Hz
+
+        while not flgMoved:
+            if self.setPosAndWait(j):
+                r = rospy.Rate(rate)
+                flgMoved = True
+
+                print('Injecting hf-signal at rate {:d}Hz: on'.format(rate))
+
+                for i in range(sleepTime*rate):
+                    m = float(-1 if i % 2 else 1)
+                    n = [m/4000, m/8000, m/4000, m/2000, m/2000]
+                    pos = [j[k] + n[k] for k in range(5)]
+                    if i % 100 == 1:
+                        print(n)
+
+                    self.setJointPositionsImm(pos)
+
+                    r.sleep()
+
+                print('Injecting hf-signal: off')
 
     def moveToConf(self, j, sleepTime):
         flgMoved = False
@@ -337,14 +374,24 @@ class KukaController(KukaWrapper):
                 rospy.sleep(sleepTime)
                 flgMoved = True
 
+    def getRandomConf(self):
+        j = [0, 0, 0, 0, 0]
+
+        while True:
+            for i in range(5):
+                j[i] = random.uniform(self.jointsRange[i][0], self.jointsRange[i][1])
+
+            if self.checkPositionJEnabled(j):
+                break
+
+        return j
+
     def moveToRandomConf3(self, sleepTime):
         flgMoved = False
         pos = self.jointState.position
 
         while not flgMoved:
-            j = [0, 0, 0, 0, 0]
-            for i in range(5):
-                j[i] = random.uniform(self.jointsRange[i][0], self.jointsRange[i][1])
+            j = self.getRandomConf()
             j[0] = pos[0]
             j[4] = pos[4]
             if self.setPosAndWait(j):
