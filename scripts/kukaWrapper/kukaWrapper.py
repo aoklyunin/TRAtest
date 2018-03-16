@@ -16,6 +16,8 @@ from kinematic import getDHMatrix, getG
 import time
 import numpy as np
 
+from jacobian.main import get_inversed_jacobian
+
 
 class KukaWrapper:
     """
@@ -75,6 +77,7 @@ class KukaWrapper:
     overG = [0] * 5
     G = [0] * 5
     F = [0] * 3
+    wrenches = np.zeros((3, 6))
 
     G_ERROR_RANGE = [10, 0, 0, 0, 10]
     G_K = [0.2, 0.1, 0.07, 0.3, 0.5]
@@ -312,6 +315,29 @@ class KukaWrapper:
 
         return torques
 
+    def calculateWrenches(self, position, allTorques, gravityTorques):
+        invJ = get_inversed_jacobian(position)
+
+        torques = [allTorques[0], allTorques[1], allTorques[2], allTorques[3], allTorques[4]]
+
+        whole = np.dot(invJ, torques)
+        inner = np.dot(invJ, gravityTorques)
+
+        outer = np.dot(invJ, [torques[i] - gravityTorques[i] for i in range(5)])
+
+        return [
+            whole,
+            inner,
+            outer # (whole - inner)/100
+        ]
+
+        # return [
+        #     np.dot(invJ, np.array(torques)),
+        #     np.dot(invJ, np.array(gravityTorques)),
+        #     np.dot(invJ, np.array(torques - gravityTorques))
+        # ]
+
+
     def calculateOverG(self):
         """
              посчитать избыточные моменты
@@ -325,6 +351,7 @@ class KukaWrapper:
             if abs(self.overG[i]) < self.G_ERROR_RANGE[i]:
                 self.overG[i] = 0
 
+        self.wrenches = self.calculateWrenches(self.jointState.position, self.jointState.effort, gravityTorques)
         # print('OverG {}'.format(self.overG))
         # print('r {}'.format(self.jointState.effort))
         # print('e {}'.format(gravityTorques))

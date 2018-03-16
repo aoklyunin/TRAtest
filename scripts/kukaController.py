@@ -65,8 +65,8 @@ class KukaController(KukaWrapper):
                 targetQ = [offset[j] + relQ[j] for j in range(5)]
 
                 # получаем суммарное сверхусилие
-                sumOverG = sum(abs(self.overG))
-                print("sumOverG {}", sumOverG)
+                sumOverG = abs(self.wrenches[2][0]) + abs(self.wrenches[2][1]) + abs(self.wrenches[2][2])  # self.wrenches # sum(abs(self.overG))
+                print("self.wrenches {} {} {}", self.wrenches[2][0], self.wrenches[2][1], self.wrenches[2][2])
                 # если оно выше заданного значения
                 if sumOverG > maxOverG:
                     print("Overload detected")
@@ -102,8 +102,8 @@ class KukaController(KukaWrapper):
                 targetQ = [offset[j] + relQ[j] for j in range(5)]
 
                 # получаем суммарное сверхусилие
-                sumOverG = sum(abs(self.overG))
-                print("sumOverG {}", sumOverG)
+                sumOverG = abs(self.wrenches[2][0]) + abs(self.wrenches[2][1]) + abs(self.wrenches[2][2]) # self.wrenches # sum(abs(self.overG))
+                print("self.wrenches {} {} {}", self.wrenches[2][0], self.wrenches[2][1], self.wrenches[2][2])
                 # если оно выше заданного значения
                 if sumOverG > maxOverG:
                     print("Overload detected")
@@ -314,8 +314,8 @@ class KukaController(KukaWrapper):
 
         currentPos = self.jointState.position
         positions = [
-            [currentPos[0], self.jointsRange[1][0], currentPos[2], currentPos[3], currentPos[4]],
-            [currentPos[0], self.jointsRange[1][1], currentPos[2], currentPos[3], currentPos[4]]
+            [currentPos[0], self.jointsRange[1][0] + 0.1*(self.jointsRange[1][1]-self.jointsRange[1][0]), currentPos[2], currentPos[3], currentPos[4]],
+            [currentPos[0], self.jointsRange[1][0] + 0.9*(self.jointsRange[1][1]-self.jointsRange[1][0]), currentPos[2], currentPos[3], currentPos[4]]
         ]
 
         for i in range(len(positions)):

@@ -60,6 +60,15 @@ class Frame(wx.Frame):
                 self.myGrid.SetCellValue(i, 3, ("%.2f" % self.kuka.G[i]))
                 self.myGrid.SetCellValue(i, 4, ("%.2f" % self.kuka.overG[i]))
 
+    def setJacobianToGrid(self, data):
+        """
+        Обновить данные по силам и моментам на энд-эффекторе
+        """
+        for i in range(3):
+            for j in range(5):
+                self.jacobianGrid.SetCellValue(i, j, ("%.2f" % (data[i][j])))
+
+
     def getJoinfFromText(self):
         """
             получить углы из полей ввобда джоинтов
@@ -127,6 +136,8 @@ class Frame(wx.Frame):
             события по таймеру 2Гц
                 """
         self.setDataToGrid(self.kuka.jointState)
+        self.setJacobianToGrid(self.kuka.wrenches)
+
         self.setDHChords()
         if self.kuka.checkCurPositionEnabled():
             self.posEnabledTex.SetLabel("Enabled")
@@ -188,6 +199,8 @@ class Frame(wx.Frame):
         self.panel.SetSizer(self.sizer)
         # инициализируем элементы управления
         self.initControlItems()
+        self.jacobianGrid()
+
         # запускаем таймер
         self.timer = wx.Timer(self, -1)
         # раз в 0.5 секунды
@@ -251,6 +264,25 @@ class Frame(wx.Frame):
         self.expPanel = wx.Panel(self.panel, pos=(0, 400), size=(690, 500))
         # добавляем элементы из эксперимента
         self.initExpItems()
+
+    def jacobianGrid(self):
+        """
+        """
+        # создаём таблицу
+        self.jacobianGrid = gridlib.Grid(self.expPanel, pos=(30, 350), size=(690, 120))
+        # кол-во строк и столбцов
+        # нумерация в таблице начинается с ячейки (0,0)
+        self.jacobianGrid.CreateGrid(3, 5)
+        # задаём имена столбцов
+        self.jacobianGrid.SetColLabelValue(4, "M2")
+        self.jacobianGrid.SetColLabelValue(3, "M1")
+        self.jacobianGrid.SetColLabelValue(2, "Fz")
+        self.jacobianGrid.SetColLabelValue(1, "Fy")
+        self.jacobianGrid.SetColLabelValue(0, "Fx")
+
+        self.jacobianGrid.SetRowLabelValue(0, "EE")
+        self.jacobianGrid.SetRowLabelValue(1, "EE internal")
+        self.jacobianGrid.SetRowLabelValue(2, "EE external")
 
     def initGrid(self):
         """

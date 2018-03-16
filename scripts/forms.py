@@ -99,11 +99,6 @@ class KukaFrame(Frame):
         self.Bind(wx.EVT_BUTTON, self.OnFingersRelease, self.fingersReleaseBtn)
 
         '''
-        Оценка массы
-        '''
-        # wx.StaticText(self.panel, -1, "Estimated mass:", (220, 270))
-
-        '''
         Демо
         '''
         self.linearMovementBtn = wx.Button(self.expPanel, label="Linear", pos=(320, 270), size=(130, 30))
@@ -201,5 +196,5 @@ class KukaFrame(Frame):
 
     def OnStartLinearMove(self, event):
         pauseTime = 0.1
-        maxOverG = 6
+        maxOverG = 80
         self.kuka.linearMove( pauseTime, maxOverG)

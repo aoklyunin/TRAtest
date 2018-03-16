@@ -4,9 +4,9 @@ from math import sin, cos
 from numpy.linalg import inv
 from numpy import transpose, dot
 
-import jacob1
-import jacob2
-import jacob3
+from jacob1 import jacob1
+from jacob2 import jacob2
+from jacob3 import jacob3
 
 from consts import th2, th4, al1, al4, CANDLE_CONF
 
