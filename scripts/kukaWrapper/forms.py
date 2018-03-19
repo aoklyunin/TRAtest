@@ -188,6 +188,12 @@ class Frame(wx.Frame):
                 """
         self.kuka.setJointVelocities([0, 0, 0, 0, 0])
 
+    def OnMeasure(self, event):
+        """
+            Начать измерения
+                """
+        self.kuka.measure(duration=10, rate=30)
+
     def __init__(self, parent=None, id=-1, title='', pos=(0, 0), size=(690, 900)):
         """
             конструктор
@@ -249,6 +255,9 @@ class Frame(wx.Frame):
         # выставить в положение с инжекций высокочастотного сигнала
         self.sendJposVBtn = wx.Button(self.panel, label="Положения (В)", pos=(140, 260), size=(120, 30))
         self.Bind(wx.EVT_BUTTON, self.OnSendJPosV, self.sendJposVBtn)
+
+        self.measureBtn = wx.Button(self.panel, label="Измерения (В)", pos=(140, 300), size=(120, 30))
+        self.Bind(wx.EVT_BUTTON, self.OnMeasure, self.measureBtn)
 
         self.sendJvelBtn = wx.Button(self.panel, label="Скорости", pos=(30, 300), size=(100, 30))
         self.Bind(wx.EVT_BUTTON, self.OnSendJVel, self.sendJvelBtn)

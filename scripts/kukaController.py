@@ -18,6 +18,7 @@ class KukaController(KukaWrapper):
     """
        Класс управления кукой
     """
+    measureNumber = 0
 
     def getStandartJoints(self):
         """
@@ -342,29 +343,42 @@ class KukaController(KukaWrapper):
             self.setRobotToCandle()
             rospy.sleep(1)
 
+    def measure(self, duration, rate):
+        pos = self.jointState.position
+
+        self.outLogMode = 'measure'
+        self.outLogSubMode = 'measure_' + str(self.measureNumber)
+
+        self.injectHFS(pos, duration, rate)
+        self.measureNumber = self.measureNumber + 1
+        self.outLogMode = 'default'
+        self.outLogSubMode = 'default'
+
+    def injectHFS(self, j, duration, rate):
+        print('Injecting hf-signal at rate {:d}Hz: on'.format(rate))
+        r = rospy.Rate(rate)
+
+        for i in range(duration * rate):
+            m = float(-1 if i % 2 else 1)
+            n = [m / 4000, m / 8000, m / 4000, m / 2000, m / 2000]
+            pos = [j[k] + n[k] for k in range(5)]
+            if i % 100 == 1:
+                print(n)
+
+            self.setJointPositionsImm(pos)
+
+            r.sleep()
+
+        print('Injecting hf-signal: off')
+
     def moveToConfV(self, j, sleepTime):
         flgMoved = False
         rate = 30 #Hz
 
         while not flgMoved:
             if self.setPosAndWait(j):
-                r = rospy.Rate(rate)
                 flgMoved = True
-
-                print('Injecting hf-signal at rate {:d}Hz: on'.format(rate))
-
-                for i in range(sleepTime*rate):
-                    m = float(-1 if i % 2 else 1)
-                    n = [m/4000, m/8000, m/4000, m/2000, m/2000]
-                    pos = [j[k] + n[k] for k in range(5)]
-                    if i % 100 == 1:
-                        print(n)
-
-                    self.setJointPositionsImm(pos)
-
-                    r.sleep()
-
-                print('Injecting hf-signal: off')
+                self.injectHFS(j, sleepTime, rate)
 
     def moveToConf(self, j, sleepTime):
         flgMoved = False
