@@ -13,7 +13,6 @@ import rospy
 
 from scripts.kukaWrapper.kukaWrapper import KukaWrapper
 
-
 class KukaController(KukaWrapper):
     """
        Класс управления кукой

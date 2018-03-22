@@ -12,6 +12,7 @@ import wx.grid as gridlib
 from kinematic import getG
 from scripts.kukaWrapper.kukaWrapper import KukaWrapper
 
+from scripts.kukaThreaded.main import KukaThreaded
 
 class Frame(wx.Frame):
     """
@@ -92,7 +93,8 @@ class Frame(wx.Frame):
         """
             управление положением по джоинтам c инжекцией вч сигнала на 10с
         """
-        self.kuka.moveToConfV(self.getJoinfFromText(), 10)
+        kukaThreaded = KukaThreaded(position=self.getJoinfFromText(), duration=10)
+        kukaThreaded.start()
 
     def OnSendJVel(self, event):
         """

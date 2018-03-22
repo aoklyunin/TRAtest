@@ -18,7 +18,6 @@ import numpy as np
 
 from jacobian.main import get_inversed_jacobian
 
-
 class KukaWrapper:
     """
     Родительский класс для управления кукой
@@ -368,6 +367,8 @@ class KukaWrapper:
         """
         # созраняем пришедшее значение
         self.jointState = data
+        return True
+
         self.G = self.getGravityTorques(self.jointState.effort, self.jointState.position)
         self.calculateOverG()
         self.getF()
@@ -404,20 +405,20 @@ class KukaWrapper:
         """
         # переменные для публикации в топики
         self.positionArmPub = rospy.Publisher("/arm_1/arm_controller/position_command",
-                                              brics_actuator.msg.JointPositions, queue_size=1)
+                                              brics_actuator.msg.JointPositions, queue_size=1, tcp_nodelay=True)
         self.torqueArmPub = rospy.Publisher("/arm_1/arm_controller/torques_command", brics_actuator.msg.JointTorques,
-                                            queue_size=1)
+                                            queue_size=1, tcp_nodelay=True)
         self.velocityArmPub = rospy.Publisher("/arm_1/arm_controller/velocity_command",
-                                              brics_actuator.msg.JointVelocities, queue_size=1)
-        self.cartVelPub = rospy.Publisher("/cmd_vel", geometry_msgs.msg.Twist, queue_size=1)
+                                              brics_actuator.msg.JointVelocities, queue_size=1, tcp_nodelay=True)
+        self.cartVelPub = rospy.Publisher("/cmd_vel", geometry_msgs.msg.Twist, queue_size=1, tcp_nodelay=True)
         self.positionGripperPub = rospy.Publisher("/arm_1/gripper_controller/position_command",
-                                                  brics_actuator.msg.JointPositions, queue_size=1)
+                                                  brics_actuator.msg.JointPositions, queue_size=1, tcp_nodelay=True)
         self.forceGripperPub = rospy.Publisher("/gripper_controller/force_command", brics_actuator.msg.JointTorques,
-                                               queue_size=1)
+                                               queue_size=1, tcp_nodelay=True)
         self.velocityGripperPub = rospy.Publisher("/gripper_controller/velocity_command",
-                                                  brics_actuator.msg.JointVelocities, queue_size=1)
+                                                  brics_actuator.msg.JointVelocities, queue_size=1, tcp_nodelay=True)
         self.jointStateSubscriber = rospy.Subscriber("/joint_states", sensor_msgs.msg.JointState,
-                                                     self.jointStateCallback)
+                                                     self.jointStateCallback, tcp_nodelay=True, queue_size=1)
         dt = datetime.datetime.now()
         date = dt.strftime("%Y%m%d_%I%M%p")
         self.outLogMode = 'default'

@@ -10,7 +10,6 @@ from scripts.kukaController import KukaController
 from scripts.kukaWrapper.forms import Frame
 import wx
 
-
 class KukaFrame(Frame):
     """
         Класс графического окна
